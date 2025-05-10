@@ -64,18 +64,18 @@ jobs:
         id: apply
         run: |
           echo "terraform apply demonstration"
-#          terraform apply -auto-approve \
-#            -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-#            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
-#            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-#            -var="bucket_name=${{ env.BUCKET_NAME }}" \
-#            -var="domain_name=cloud-instances.info" \
-#            -var="subdomain=${{ env.SUBDOMAIN }}" \
-#            -var="bucket_location=auto"
-          
-          # Save the terraform output to use in subsequent steps
-#          terraform output -json > tf_output.json
-#          echo "website_url=$(cat tf_output.json | jq -r '.website_url.value')" >> $GITHUB_ENV
+        #          terraform apply -auto-approve \
+        #            -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+        #            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
+        #            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+        #            -var="bucket_name=${{ env.BUCKET_NAME }}" \
+        #            -var="domain_name=cloud-instances.info" \
+        #            -var="subdomain=${{ env.SUBDOMAIN }}" \
+        #            -var="bucket_location=auto"
+
+        # Save the terraform output to use in subsequent steps
+        #          terraform output -json > tf_output.json
+        #          echo "website_url=$(cat tf_output.json | jq -r '.website_url.value')" >> $GITHUB_ENV
         working-directory: infra/terraform/cloudflare_ephemeral_infra
 
       - name: Deploy site to R2
@@ -122,29 +122,29 @@ jobs:
         run: terraform init
         working-directory: infra/terraform/cloudflare_ephemeral_infra
 
-#      - name: Import existing resources
-#        run: |
-#          # Import resources if they exist
-#          terraform import -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-#            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
-#            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-#            -var="bucket_name=${{ env.BUCKET_NAME }}" \
-#            -var="domain_name=cloud-instances.info" \
-#            -var="subdomain=${{ env.SUBDOMAIN }}" \
-#            cloudflare_r2_bucket.website_bucket ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/${{ env.BUCKET_NAME }} || true
-#        working-directory: infra/terraform/cloudflare_ephemeral_infra
+      #      - name: Import existing resources
+      #        run: |
+      #          # Import resources if they exist
+      #          terraform import -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+      #            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
+      #            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+      #            -var="bucket_name=${{ env.BUCKET_NAME }}" \
+      #            -var="domain_name=cloud-instances.info" \
+      #            -var="subdomain=${{ env.SUBDOMAIN }}" \
+      #            cloudflare_r2_bucket.website_bucket ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/${{ env.BUCKET_NAME }} || true
+      #        working-directory: infra/terraform/cloudflare_ephemeral_infra
 
       - name: Destroy PR environment
         run: |
           echo "terraform destroy demonstration"
-#          terraform destroy -auto-approve \
-#            -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-#            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
-#            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-#            -var="bucket_name=${{ env.BUCKET_NAME }}" \
-#            -var="domain_name=cloud-instances.info" \
-#            -var="subdomain=${{ env.SUBDOMAIN }}" \
-#            -var="bucket_location=auto"
+        #          terraform destroy -auto-approve \
+        #            -var="cloudflare_deployment_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+        #            -var="cloudflare_account_id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" \
+        #            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+        #            -var="bucket_name=${{ env.BUCKET_NAME }}" \
+        #            -var="domain_name=cloud-instances.info" \
+        #            -var="subdomain=${{ env.SUBDOMAIN }}" \
+        #            -var="bucket_location=auto"
         working-directory: infra/terraform/cloudflare_ephemeral_infra
 
       - name: Add PR comment about environment destruction
@@ -158,4 +158,3 @@ jobs:
               repo: context.repo.repo,
               body: `🧹 Preview environment has been successfully destroyed.`
             })
-  
