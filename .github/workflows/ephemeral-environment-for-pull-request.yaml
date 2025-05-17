@@ -168,6 +168,20 @@ jobs:
           echo "BUCKET_NAME=cloud-instances-info-pull-request-${{ github.event.number }}" >> $GITHUB_ENV
           echo "SUBDOMAIN=pull-request-${{ github.event.number }}" >> $GITHUB_ENV
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev libxml2-dev libxslt1-dev libssl-dev
+          python -m pip install --upgrade pip
+          python3 -m venv env
+          source env/bin/activate
+          pip install -r requirements.txt
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

@@ -180,12 +180,12 @@ def bucket_create(c):
 @task
 def bucket_delete(c):
     """Deletes the S3 bucket used to host the site"""
+    # Get bucket name from environment variable or use default
+    BUCKET_NAME = os.environ.get("BUCKET_NAME", "www.ec2instances.info")
+
     if not confirm(f"Are you sure you want to delete the bucket {BUCKET_NAME!r}?"):
         print("Aborting at user request.")
         exit(1)
-
-    # Get bucket name from environment variable or use default
-    BUCKET_NAME = os.environ.get("BUCKET_NAME", "www.ec2instances.info")
 
     # Determine if we're using R2 or S3 based on environment variables
     if os.environ.get("R2_ACCOUNT_ID"):
