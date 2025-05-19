@@ -201,6 +201,8 @@ jobs:
           R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          INTERACTIVE: false
+          ONLY_EMPTY: true
         run: |
           source env/bin/activate
           invoke bucket-delete

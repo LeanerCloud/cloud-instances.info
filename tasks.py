@@ -182,8 +182,10 @@ def bucket_delete(c):
     """Deletes the S3 bucket used to host the site"""
     # Get bucket name from environment variable or use default
     BUCKET_NAME = os.environ.get("BUCKET_NAME", "www.ec2instances.info")
+    INTERACTIVE = os.environ.get("INTERACTIVE", "true")
+    ONLY_EMPTY = os.environ.get("ONLY_EMPTY", "false")
 
-    if not confirm(f"Are you sure you want to delete the bucket {BUCKET_NAME!r}?"):
+    if INTERACTIVE == "true" and not confirm(f"Are you sure you want to delete the bucket {BUCKET_NAME!r}?"):
         print("Aborting at user request.")
         exit(1)
 
@@ -194,7 +196,7 @@ def bucket_delete(c):
         endpoint_url = (
             f"https://{os.environ.get('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com"
         )
-        s3 = boto3.client(
+        s3 = boto3.resource(
             "s3",
             endpoint_url=endpoint_url,
             aws_access_key_id=os.environ.get("R2_ACCESS_KEY_ID"),
@@ -206,12 +208,16 @@ def bucket_delete(c):
     else:
         # Using AWS S3
         print(f"Deleting AWS S3 bucket {BUCKET_NAME}")
-        s3 = boto3.client("s3")
+        s3 = boto3.resource("s3")
 
     bucket = s3.Bucket(BUCKET_NAME)
 
     # Delete all objects in the bucket first
     bucket.objects.all().delete()
+
+    if ONLY_EMPTY == "true":
+        print(f"Bucket {BUCKET_NAME!r} emptied.")
+        return
 
     # Then delete the bucket
     bucket.delete()
