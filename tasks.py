@@ -2,12 +2,13 @@
 #   AWS_ACCESS_KEY_ID
 #   AWS_SECRET_ACCESS_KEY
 # as explained in AWS documentation: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html
-
+import json
 import os
 import traceback
 import mimetypes
 
 import boto3
+import requests
 from invoke import task
 from invocations.console import confirm
 from six.moves import SimpleHTTPServer, socketserver
@@ -29,23 +30,55 @@ abspath = lambda filename: os.path.join(
 
 HTTP_HOST = os.getenv("HTTP_HOST", "127.0.0.1")
 HTTP_PORT = os.getenv("HTTP_PORT", "8080")
+REMOTE_WEBSITE_DATA_PREFIX = os.getenv("REMOTE_WEBSITE_DATA_PREFIX","https://cloud-instances.info")
+
+def fetch_from_website_and_write_to_file(file_path):
+    remote_url = f"{REMOTE_WEBSITE_DATA_PREFIX}/{file_path}"
+    file_path = f"www/{file_path}"
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    try:
+        response = requests.get(remote_url)
+        response.raise_for_status()
+        data = response.json()
+        with open(file_path, "w") as f:
+            f.write(json.dumps(data))
+        print(f"INFO: data fetched from: {remote_url} and saved to local file: {file_path}")
+        return data
+
+    except requests.exceptions.RequestException as e:
+        print(f"ERROR: Network error while fetching data: {e}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"ERROR: Invalid JSON received: {e}")
+        return None
+    except Exception as e:
+        print(f"ERROR: Unexpected error: {e}")
+        return None
 
 
 @task
-def build(c):
+def build(c, refresh_data=False):
     """Scrape AWS sources for data and build the site"""
-    scrape_ec2(c)
-    scrape_rds(c)
-    scrape_cache(c)
-    scrape_redshift(c)
-    scrape_opensearch(c)
+    scrape_ec2(c, refresh_data)
+    scrape_rds(c, refresh_data)
+    scrape_elasticache(c, refresh_data)
+    scrape_redshift(c, refresh_data)
+    scrape_opensearch(c, refresh_data)
     render_html(c)
 
 
 @task
-def scrape_ec2(c):
+def scrape_ec2(c, refresh_data):
     """Scrape EC2 data from AWS and save to local file"""
-    ec2_file = "www/instances.json"
+    ec2_file = "instances.json"
+    if not refresh_data:
+        result = fetch_from_website_and_write_to_file(ec2_file)
+        if result is None:
+            print("Unable to fetch data, proceed to scrap")
+        else:
+        # data is fetched from website, no need to scrap aws
+            return
+
     try:
         scrape(ec2_file)
     except Exception as e:
@@ -54,9 +87,17 @@ def scrape_ec2(c):
 
 
 @task
-def scrape_rds(c):
+def scrape_rds(c, refresh_data):
     """Scrape RDS data from AWS and save to local file"""
-    rds_file = "www/rds/instances.json"
+    rds_file = "rds/instances.json"
+    if not refresh_data:
+        result = fetch_from_website_and_write_to_file(rds_file)
+        if result is None:
+            print("Unable to fetch data, proceed to scrap")
+        else:
+            # data is fetched from website, no need to scrap aws
+            return
+
     try:
         rds_scrape(rds_file)
     except Exception as e:
@@ -65,20 +106,36 @@ def scrape_rds(c):
 
 
 @task
-def scrape_cache(c):
+def scrape_elasticache(c, refresh_data):
     """Scrape Cache instance data from AWS and save to local file"""
-    cache_file = "www/cache/instances.json"
+    elasticache_file = "cache/instances.json"
+    if not refresh_data:
+        result = fetch_from_website_and_write_to_file(elasticache_file)
+        if result is None:
+            print("Unable to fetch data, proceed to scrap")
+        else:
+            # data is fetched from website, no need to scrap aws
+            return
+
     try:
-        cache_scrape(cache_file)
+        cache_scrape(elasticache_file)
     except Exception as e:
         print("ERROR: Unable to scrape Cache data")
         print(traceback.print_exc())
 
 
 @task
-def scrape_redshift(c):
+def scrape_redshift(c, refresh_data):
     """Scrape Redshift instance data from AWS and save to local file"""
-    redshift_file = "www/redshift/instances.json"
+    redshift_file = "redshift/instances.json"
+    if not refresh_data:
+        result = fetch_from_website_and_write_to_file(redshift_file)
+        if result is None:
+            print("Unable to fetch data, proceed to scrap")
+        else:
+            # data is fetched from website, no need to scrap aws
+            return
+
     try:
         redshift_scrape(redshift_file)
     except Exception as e:
@@ -87,9 +144,16 @@ def scrape_redshift(c):
 
 
 @task
-def scrape_opensearch(c):
+def scrape_opensearch(c, refresh_data):
     """Scrape OpenSearch instance data from AWS and save to local file"""
-    opensearch_file = "www/opensearch/instances.json"
+    opensearch_file = "opensearch/instances.json"
+    if not refresh_data:
+        result = fetch_from_website_and_write_to_file(opensearch_file)
+        if result is None:
+            print("Unable to fetch data, proceed to scrap")
+        else:
+            # data is fetched from website, no need to scrap aws
+            return
     try:
         opensearch_scrape(opensearch_file)
     except Exception as e:

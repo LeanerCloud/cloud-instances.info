@@ -136,6 +136,18 @@ deactivate # to exit virtualenv
 - [Mako](http://www.makotemplates.org/)
 - [lxml](http://lxml.de/)
 
+## Build Options
+
+Build command accepts a flag --refresh-data which will performs a full data scrap of latest pricing data from AWS
+
+Usage
+
+```bash
+invoke build --refresh-data
+```
+
+A normal build i.e. `invoke build` fetches the latest published pricing data from cloud-instances.info for the local website build.
+
 ## Tips for Developing Locally
 
 ```
