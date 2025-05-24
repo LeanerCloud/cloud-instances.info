@@ -30,11 +30,16 @@ abspath = lambda filename: os.path.join(
 
 HTTP_HOST = os.getenv("HTTP_HOST", "127.0.0.1")
 HTTP_PORT = os.getenv("HTTP_PORT", "8080")
-REMOTE_WEBSITE_DATA_PREFIX = os.getenv("REMOTE_WEBSITE_DATA_PREFIX","https://cloud-instances.info")
+REMOTE_WEBSITE_DATA_PREFIX = os.getenv(
+    "REMOTE_WEBSITE_DATA_PREFIX", "https://cloud-instances.info"
+)
+
+LOCAL_FILE_BASE_PATH = "www"
+
 
 def fetch_from_website_and_write_to_file(file_path):
     remote_url = f"{REMOTE_WEBSITE_DATA_PREFIX}/{file_path}"
-    file_path = f"www/{file_path}"
+    file_path = f"{LOCAL_FILE_BASE_PATH}/{file_path}"
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     try:
         response = requests.get(remote_url)
@@ -42,7 +47,9 @@ def fetch_from_website_and_write_to_file(file_path):
         data = response.json()
         with open(file_path, "w") as f:
             f.write(json.dumps(data))
-        print(f"INFO: data fetched from: {remote_url} and saved to local file: {file_path}")
+        print(
+            f"INFO: data fetched from: {remote_url} and saved to local file: {file_path}"
+        )
         return data
 
     except requests.exceptions.RequestException as e:
@@ -76,11 +83,11 @@ def scrape_ec2(c, refresh_data):
         if result is None:
             print("Unable to fetch data, proceed to scrap")
         else:
-        # data is fetched from website, no need to scrap aws
+            # data is fetched from website, no need to scrap aws
             return
 
     try:
-        scrape(ec2_file)
+        scrape(f"{LOCAL_FILE_BASE_PATH}/{ec2_file}")
     except Exception as e:
         print("ERROR: Unable to scrape EC2 data")
         print(traceback.print_exc())
@@ -99,7 +106,7 @@ def scrape_rds(c, refresh_data):
             return
 
     try:
-        rds_scrape(rds_file)
+        rds_scrape(f"{LOCAL_FILE_BASE_PATH}/{rds_file}")
     except Exception as e:
         print("ERROR: Unable to scrape RDS data")
         print(traceback.print_exc())
@@ -118,7 +125,7 @@ def scrape_elasticache(c, refresh_data):
             return
 
     try:
-        cache_scrape(elasticache_file)
+        cache_scrape(f"{LOCAL_FILE_BASE_PATH}/{elasticache_file}")
     except Exception as e:
         print("ERROR: Unable to scrape Cache data")
         print(traceback.print_exc())
@@ -137,7 +144,7 @@ def scrape_redshift(c, refresh_data):
             return
 
     try:
-        redshift_scrape(redshift_file)
+        redshift_scrape(f"{LOCAL_FILE_BASE_PATH}/{redshift_file}")
     except Exception as e:
         print("ERROR: Unable to scrape Redshift data")
         print(traceback.print_exc())
@@ -155,7 +162,7 @@ def scrape_opensearch(c, refresh_data):
             # data is fetched from website, no need to scrap aws
             return
     try:
-        opensearch_scrape(opensearch_file)
+        opensearch_scrape(f"{LOCAL_FILE_BASE_PATH}/{opensearch_file}")
     except Exception as e:
         print("ERROR: Unable to scrape OpenSearch data")
         print(traceback.print_exc())
