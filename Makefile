@@ -13,7 +13,7 @@ black:
 	black .
 
 prettier:
-	prettier --write .
+	npx prettier --write .
 
 nixpkgs-fmt:
 	nixpkgs-fmt .

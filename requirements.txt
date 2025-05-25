@@ -7,3 +7,4 @@ six
 boto3
 pyyaml
 setuptools
+black
