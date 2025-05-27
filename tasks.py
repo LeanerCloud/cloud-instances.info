@@ -20,6 +20,7 @@ from opensearch import scrape as opensearch_scrape
 from render import render
 from render import build_sitemap
 from render import about_page
+from render import sponsors_page
 from scrape import scrape
 
 BUCKET_NAME = "www.ec2instances.info"
@@ -220,6 +221,7 @@ def render_html(c):
         )
     )
     sitemap.append(about_page())
+    sitemap.append(sponsors_page())
     build_sitemap(sitemap)
 
 

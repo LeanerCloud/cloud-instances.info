@@ -72,7 +72,7 @@
         </div>
         <%block name="header"/>
         <div class="d-flex">
-          <div class="nav-buttons px-2 d-none d-xxl-block">
+          <div class="nav-buttons px-1 d-none d-xxl-block">
             <a target="_blank" href="https://join.slack.com/t/leanercloud/shared_invite/zt-xodcoi9j-1IcxNozXx1OW0gh_N08sjg" class="btn btn-purple btn-icon">
               <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                 <mask id="mask0_2_502" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="1" y="1" width="22" height="22">
@@ -92,12 +92,43 @@
               Slack
             </a>
           </div>
-          <div class="nav-buttons d-none d-xxl-block">
-            <a target="_black" href="https://github.com/LeanerCloud/cloud-instances.info" class="btn btn-github btn-icon">
-              <svg class="me-1" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" fill="#1a1a1c" d="M9 0C4.0275 0 0 4.0275 0 9C0 12.9825 2.57625 16.3463 6.15375 17.5387C6.60375 17.6175 6.7725 17.3475 6.7725 17.1112C6.7725 16.8975 6.76125 16.1888 6.76125 15.435C4.5 15.8513 3.915 14.8837 3.735 14.3775C3.63375 14.1187 3.195 13.32 2.8125 13.1062C2.4975 12.9375 2.0475 12.5212 2.80125 12.51C3.51 12.4987 4.01625 13.1625 4.185 13.4325C4.995 14.7937 6.28875 14.4113 6.80625 14.175C6.885 13.59 7.12125 13.1962 7.38 12.9712C5.3775 12.7463 3.285 11.97 3.285 8.5275C3.285 7.54875 3.63375 6.73875 4.2075 6.10875C4.1175 5.88375 3.8025 4.96125 4.2975 3.72375C4.2975 3.72375 5.05125 3.4875 6.7725 4.64625C7.4925 4.44375 8.2575 4.3425 9.0225 4.3425C9.7875 4.3425 10.5525 4.44375 11.2725 4.64625C12.9938 3.47625 13.7475 3.72375 13.7475 3.72375C14.2425 4.96125 13.9275 5.88375 13.8375 6.10875C14.4113 6.73875 14.76 7.5375 14.76 8.5275C14.76 11.9812 12.6562 12.7463 10.6538 12.9712C10.98 13.2525 11.2613 13.7925 11.2613 14.6363C11.2613 15.84 11.25 16.8075 11.25 17.1112C11.25 17.3475 11.4187 17.6287 11.8688 17.5387C15.4237 16.3463 18 12.9712 18 9C18 4.0275 13.9725 0 9 0Z" fill="white"/>
+          <div class="nav-buttons d-none px-1 d-xxl-block">
+            <a target="_blank" href="https://github.com/LeanerCloud/cloud-instances.info" class="btn btn-purple btn-icon">
+              <svg class="me-2" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="white" d="M9 0C4.0275 0 0 4.0275 0 9C0 12.9825 2.57625 16.3463 6.15375 17.5387C6.60375 17.6175 6.7725 17.3475 6.7725 17.1112C6.7725 16.8975 6.76125 16.1888 6.76125 15.435C4.5 15.8513 3.915 14.8837 3.735 14.3775C3.63375 14.1187 3.195 13.32 2.8125 13.1062C2.4975 12.9375 2.0475 12.5212 2.80125 12.51C3.51 12.4987 4.01625 13.1625 4.185 13.4325C4.995 14.7937 6.28875 14.4113 6.80625 14.175C6.885 13.59 7.12125 13.1962 7.38 12.9712C5.3775 12.7463 3.285 11.97 3.285 8.5275C3.285 7.54875 3.63375 6.73875 4.2075 6.10875C4.1175 5.88375 3.8025 4.96125 4.2975 3.72375C4.2975 3.72375 5.05125 3.4875 6.7725 4.64625C7.4925 4.44375 8.2575 4.3425 9.0225 4.3425C9.7875 4.3425 10.5525 4.44375 11.2725 4.64625C12.9938 3.47625 13.7475 3.72375 13.7475 3.72375C14.2425 4.96125 13.9275 5.88375 13.8375 6.10875C14.4113 6.73875 14.76 7.5375 14.76 8.5275C14.76 11.9812 12.6562 12.7463 10.6538 12.9712C10.98 13.2525 11.2613 13.7925 11.2613 14.6363C11.2613 15.84 11.25 16.8075 11.25 17.1112C11.25 17.3475 11.4187 17.6287 11.8688 17.5387C15.4237 16.3463 18 12.9712 18 9C18 4.0275 13.9725 0 9 0Z"/>
               </svg>
-              Star
+              Github
+            </a>
+          </div>
+          <div class="nav-buttons d-none px-1 d-xxl-block">
+            <a target="_blank" href="/sponsors.html" class="btn btn-purple btn-icon">
+              <svg class="me-2" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Gift box base -->
+                <rect x="3" y="8" width="12" height="8" rx="1" fill="white"/>
+                
+                <!-- Gift box lid -->
+                <rect x="2.5" y="6" width="13" height="3" rx="0.5" fill="white" opacity="0.9"/>
+                
+                <!-- Ribbon vertical -->
+                <rect x="8" y="6" width="2" height="10" fill="#ff6b6b"/>
+                
+                <!-- Ribbon horizontal -->
+                <rect x="2.5" y="7" width="13" height="2" fill="#ff6b6b"/>
+                
+                <!-- Bow loops -->
+                <ellipse cx="7" cy="5" rx="2" ry="1.5" fill="#ff6b6b"/>
+                <ellipse cx="11" cy="5" rx="2" ry="1.5" fill="#ff6b6b"/>
+                
+                <!-- Bow center -->
+                <rect x="8.5" y="4" width="1" height="2" rx="0.5" fill="#cc5555"/>
+                
+                <!-- Sparkles around gift -->
+                <circle cx="4" cy="3" r="0.5" fill="white" opacity="0.8"/>
+                <circle cx="14" cy="3" r="0.5" fill="white" opacity="0.8"/>
+                <circle cx="2" cy="7" r="0.5" fill="white" opacity="0.8"/>
+                <circle cx="16" cy="11" r="0.5" fill="white" opacity="0.8"/>
+              </svg>
+              Sponsors
             </a>
           </div>
         </div>
