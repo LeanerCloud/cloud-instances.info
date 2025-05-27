@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Get list of staged files
+files=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+# Exit if no files are staged
+[ -z "$files" ] && exit 0
+
+# Run Black on Python files
+echo "Running Black on staged Python files..."
+echo "$files" | grep "\.py$" | xargs -r black
+
+# Run Prettier on staged files
+echo "Running Prettier on staged files..."
+echo "$files" | xargs npx prettier --write
+
+# Add back the formatted files to staging
+echo "$files" | xargs git add
+
+exit 0 

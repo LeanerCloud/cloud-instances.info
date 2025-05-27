@@ -136,6 +136,16 @@ deactivate # to exit virtualenv
 - [Mako](http://www.makotemplates.org/)
 - [lxml](http://lxml.de/)
 
+Code Formatting tools
+
+This project uses two code formatters:
+
+- [Black](https://black.readthedocs.io/) for Python files
+- [Prettier](https://prettier.io/) for other file types
+
+Both formatters are configured to run automatically via git pre-commit hooks. The hooks will format your code before each commit.
+They can be run manually by `make format`
+
 ## Build Options
 
 Build command accepts a flag --refresh-data which will performs a full data scrap of latest pricing data from AWS
