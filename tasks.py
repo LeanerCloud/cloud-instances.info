@@ -65,13 +65,26 @@ def fetch_from_website_and_write_to_file(file_path):
 
 
 @task
-def build(c, refresh_data=False):
+def build(c, refresh_data=False, use_go=False, validate=False):
     """Scrape AWS sources for data and build the site"""
-    scrape_ec2(c, refresh_data)
-    scrape_rds(c, refresh_data)
-    scrape_elasticache(c, refresh_data)
-    scrape_redshift(c, refresh_data)
-    scrape_opensearch(c, refresh_data)
+    if use_go:
+        # Ensure Go is installed
+        install_go_if_needed(c)
+        
+        if validate:
+            # Run both Python and Go scrapers and compare
+            validate_scrapers(c, refresh_data)
+        else:
+            # Run Go scrapers
+            run_go_scrapers(c, refresh_data)
+    else:
+        # Run Python scrapers
+        scrape_ec2(c, refresh_data)
+        scrape_rds(c, refresh_data)
+        scrape_elasticache(c, refresh_data)
+        scrape_redshift(c, refresh_data)
+        scrape_opensearch(c, refresh_data)
+    
     render_html(c)
 
 
@@ -415,8 +428,199 @@ def deploy(c, root_dir="www", max_workers=30):
     print(f"\nDeployment completed: {success_count} successful, {error_count} failed")
 
 
+@task
+def validate_go(c):
+    """Validate Go scrapers against Python scrapers"""
+    build(c, refresh_data=True, use_go=True, validate=True)
+
+
 @task(default=True)
 def update(c):
     """Build and deploy the site"""
     build(c)
     deploy(c)
+
+
+def install_go_if_needed(c):
+    """Check if Go is installed and install it if needed"""
+    result = c.run("which go", warn=True, hide=True)
+    if result.failed:
+        print("Go is not installed. Installing Go...")
+        # Install Go based on the platform
+        platform = c.run("uname -s", hide=True).stdout.strip()
+        if platform == "Darwin":
+            # macOS
+            c.run("brew install go", hide=False)
+        elif platform == "Linux":
+            # Linux
+            c.run("sudo apt-get update && sudo apt-get install -y golang-go", hide=False)
+        else:
+            raise Exception(f"Unsupported platform: {platform}")
+    else:
+        # Check Go version
+        version = c.run("go version", hide=True).stdout.strip()
+        print(f"Go is already installed: {version}")
+
+
+def run_go_scrapers(c, refresh_data):
+    """Run Go scrapers"""
+    print("Running Go scrapers...")
+    
+    # Change to scraper-go directory
+    with c.cd("scraper-go"):
+        # Download dependencies
+        c.run("go mod download", hide=False)
+        
+        # Run the scraper with AWS profile
+        cmd = "AWS_PROFILE=framed go run cmd/scraper/main.go"
+        if not refresh_data:
+            # Add flag to use cached data if implemented
+            pass
+        
+        c.run(cmd, hide=False)
+
+
+def validate_scrapers(c, refresh_data):
+    """Run both Python and Go scrapers and compare outputs"""
+    import shutil
+    import tempfile
+    import json
+    import difflib
+    
+    print("Running validation between Python and Go scrapers...")
+    
+    # Set AWS profile
+    env = os.environ.copy()
+    env['AWS_PROFILE'] = 'framed'
+    
+    # Create temporary directories for outputs
+    with tempfile.TemporaryDirectory() as python_output:
+        with tempfile.TemporaryDirectory() as go_output:
+            # Run Python scrapers
+            print("\n=== Running Python scrapers ===")
+            original_www = LOCAL_FILE_BASE_PATH
+            try:
+                # Temporarily change output directory
+                globals()['LOCAL_FILE_BASE_PATH'] = python_output
+                
+                # Set AWS profile for boto3
+                os.environ['AWS_PROFILE'] = 'framed'
+                
+                # Run each Python scraper
+                scrape_ec2(c, True)  # Force refresh for fair comparison
+                scrape_rds(c, True)
+                scrape_elasticache(c, True)
+                scrape_redshift(c, True)
+                scrape_opensearch(c, True)
+                
+            finally:
+                globals()['LOCAL_FILE_BASE_PATH'] = original_www
+            
+            # Run Go scrapers
+            print("\n=== Running Go scrapers ===")
+            with c.cd("scraper-go"):
+                c.run("go mod download", hide=True)
+                c.run(f"AWS_PROFILE=framed go run cmd/scraper/main.go -o {go_output} -v -p {python_output}", hide=False)
+            
+            # Compare outputs
+            print("\n=== Comparing outputs ===")
+            compare_scraper_outputs(python_output, go_output)
+            
+            # If validation passes, copy Go output to www directory
+            if confirm_validation():
+                print("Copying Go output to www directory...")
+                for root, dirs, files in os.walk(go_output):
+                    for file in files:
+                        if file.endswith('.json'):
+                            src_path = os.path.join(root, file)
+                            rel_path = os.path.relpath(src_path, go_output)
+                            dst_path = os.path.join(LOCAL_FILE_BASE_PATH, rel_path)
+                            os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+                            shutil.copy2(src_path, dst_path)
+                            print(f"Copied {rel_path}")
+
+
+def compare_scraper_outputs(python_dir, go_dir):
+    """Compare JSON outputs from Python and Go scrapers"""
+    import json
+    import os
+    
+    services = [
+        ("instances.json", "EC2"),
+        ("rds/instances.json", "RDS"),
+        ("cache/instances.json", "ElastiCache"),
+        ("redshift/instances.json", "Redshift"),
+        ("opensearch/instances.json", "OpenSearch"),
+    ]
+    
+    for file_path, service_name in services:
+        print(f"\n--- Comparing {service_name} ---")
+        
+        python_file = os.path.join(python_dir, file_path)
+        go_file = os.path.join(go_dir, file_path)
+        
+        if not os.path.exists(python_file):
+            print(f"  ❌ Python output missing: {file_path}")
+            continue
+            
+        if not os.path.exists(go_file):
+            print(f"  ❌ Go output missing: {file_path}")
+            continue
+        
+        # Load JSON files
+        with open(python_file, 'r') as f:
+            python_data = json.load(f)
+        with open(go_file, 'r') as f:
+            go_data = json.load(f)
+        
+        # Basic comparison
+        print(f"  Python instances: {len(python_data)}")
+        print(f"  Go instances: {len(go_data)}")
+        
+        if len(python_data) != len(go_data):
+            print(f"  ⚠️  Count mismatch!")
+        
+        # Create maps for comparison
+        python_map = {inst.get('instance_type', ''): inst for inst in python_data}
+        go_map = {inst.get('instance_type', ''): inst for inst in go_data}
+        
+        # Check for missing instances
+        missing_in_go = set(python_map.keys()) - set(go_map.keys())
+        missing_in_python = set(go_map.keys()) - set(python_map.keys())
+        
+        if missing_in_go:
+            print(f"  Missing in Go ({len(missing_in_go)}): {list(missing_in_go)[:5]}...")
+        if missing_in_python:
+            print(f"  Missing in Python ({len(missing_in_python)}): {list(missing_in_python)[:5]}...")
+        
+        # Sample data structure validation
+        if python_data and go_data:
+            # Find a common instance
+            common_instances = set(python_map.keys()) & set(go_map.keys())
+            if common_instances:
+                sample_type = list(common_instances)[0]
+                py_inst = python_map[sample_type]
+                go_inst = go_map[sample_type]
+                
+                # Check key fields
+                fields_to_check = ['memory', 'vCPU', 'family', 'network_performance']
+                mismatches = []
+                
+                for field in fields_to_check:
+                    py_val = py_inst.get(field)
+                    go_val = go_inst.get(field)
+                    if py_val != go_val:
+                        mismatches.append(f"{field}: Python={py_val}, Go={go_val}")
+                
+                if mismatches:
+                    print(f"  Field mismatches in {sample_type}:")
+                    for mismatch in mismatches[:3]:  # Show first 3
+                        print(f"    - {mismatch}")
+                else:
+                    print(f"  ✅ Sample instance {sample_type} matches")
+
+
+def confirm_validation():
+    """Ask user to confirm if validation results are acceptable"""
+    response = input("\nDo you want to use the Go scraper output? (y/n): ")
+    return response.lower() == 'y'
