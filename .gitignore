@@ -17,3 +17,4 @@ result
 .wrangler
 deployment/node_modules
 node_modules
+infra/terraform/**/.terraform/

@@ -1,0 +1,782 @@
+[
+  {
+    "ACU": 200,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "memoryoptimized",
+    "confidential": false,
+    "encryption": false,
+    "family": "e",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "e2av4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 16,
+    "memory_maintenance": true,
+    "premium_io": false,
+    "pretty_name": "E2A v4",
+    "pretty_name_azure": "Standard_E2a_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 0.26,
+          "reserved": {
+            "1yr": 0.169,
+            "3yr": 0.117
+          }
+        },
+        "windows": {
+          "ondemand": 0.39,
+          "hybridbenefit": 0.26,
+          "reserved": {
+            "1yr": 0.2535,
+            "3yr": 0.17550000000000002
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 0.26,
+          "reserved": {
+            "1yr": 0.169,
+            "3yr": 0.117
+          }
+        },
+        "windows": {
+          "ondemand": 0.39,
+          "hybridbenefit": 0.26,
+          "reserved": {
+            "1yr": 0.2535,
+            "3yr": 0.17550000000000002
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 50,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": false,
+      "size": 51200
+    },
+    "uncached_disk": 50,
+    "uncached_disk_io": null,
+    "vcpu": 2,
+    "vcpus_available": 2,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 1600,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "memoryoptimized",
+    "confidential": false,
+    "encryption": false,
+    "family": "e",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "e16av4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 128,
+    "memory_maintenance": true,
+    "premium_io": false,
+    "pretty_name": "E16A v4",
+    "pretty_name_azure": "Standard_E16a_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 2.08,
+          "reserved": {
+            "1yr": 1.352,
+            "3yr": 0.936
+          }
+        },
+        "windows": {
+          "ondemand": 3.12,
+          "hybridbenefit": 2.08,
+          "reserved": {
+            "1yr": 2.028,
+            "3yr": 1.4040000000000001
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 2.08,
+          "reserved": {
+            "1yr": 1.352,
+            "3yr": 0.936
+          }
+        },
+        "windows": {
+          "ondemand": 3.12,
+          "hybridbenefit": 2.08,
+          "reserved": {
+            "1yr": 2.028,
+            "3yr": 1.4040000000000001
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 400,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": false,
+      "size": 409600
+    },
+    "uncached_disk": 400,
+    "uncached_disk_io": null,
+    "vcpu": 16,
+    "vcpus_available": 16,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 4800,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d48av4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 192,
+    "memory_maintenance": true,
+    "premium_io": false,
+    "pretty_name": "D48A v4",
+    "pretty_name_azure": "Standard_D48a_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 4.32,
+          "reserved": {
+            "1yr": 2.8080000000000003,
+            "3yr": 1.9440000000000002
+          }
+        },
+        "windows": {
+          "ondemand": 6.48,
+          "hybridbenefit": 4.32,
+          "reserved": {
+            "1yr": 4.212000000000001,
+            "3yr": 2.9160000000000004
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 4.32,
+          "reserved": {
+            "1yr": 2.8080000000000003,
+            "3yr": 1.9440000000000002
+          }
+        },
+        "windows": {
+          "ondemand": 6.48,
+          "hybridbenefit": 4.32,
+          "reserved": {
+            "1yr": 4.212000000000001,
+            "3yr": 2.9160000000000004
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 1200,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": false,
+      "size": 1228800
+    },
+    "uncached_disk": 1200,
+    "uncached_disk_io": null,
+    "vcpu": 48,
+    "vcpus_available": 48,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 9600,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d96av4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 384,
+    "memory_maintenance": true,
+    "premium_io": false,
+    "pretty_name": "D96A v4",
+    "pretty_name_azure": "Standard_D96a_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 8.64,
+          "reserved": {
+            "1yr": 5.6160000000000005,
+            "3yr": 3.8880000000000003
+          }
+        },
+        "windows": {
+          "ondemand": 12.96,
+          "hybridbenefit": 8.64,
+          "reserved": {
+            "1yr": 8.424000000000001,
+            "3yr": 5.832000000000001
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 8.64,
+          "reserved": {
+            "1yr": 5.6160000000000005,
+            "3yr": 3.8880000000000003
+          }
+        },
+        "windows": {
+          "ondemand": 12.96,
+          "hybridbenefit": 8.64,
+          "reserved": {
+            "1yr": 8.424000000000001,
+            "3yr": 5.832000000000001
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 2400,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": false,
+      "size": 2457600
+    },
+    "uncached_disk": 2400,
+    "uncached_disk_io": null,
+    "vcpu": 96,
+    "vcpus_available": 96,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 1600,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d16asv4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 64,
+    "memory_maintenance": true,
+    "premium_io": true,
+    "pretty_name": "D16AS v4",
+    "pretty_name_azure": "Standard_D16as_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 1.44,
+          "reserved": {
+            "1yr": 0.9359999999999999,
+            "3yr": 0.648
+          }
+        },
+        "windows": {
+          "ondemand": 2.16,
+          "hybridbenefit": 1.44,
+          "reserved": {
+            "1yr": 1.404,
+            "3yr": 0.972
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 1.44,
+          "reserved": {
+            "1yr": 0.9359999999999999,
+            "3yr": 0.648
+          }
+        },
+        "windows": {
+          "ondemand": 2.16,
+          "hybridbenefit": 1.44,
+          "reserved": {
+            "1yr": 1.404,
+            "3yr": 0.972
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 128,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": true,
+      "size": 131072
+    },
+    "uncached_disk": 128,
+    "uncached_disk_io": null,
+    "vcpu": 16,
+    "vcpus_available": 16,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 4800,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d48asv4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 192,
+    "memory_maintenance": true,
+    "premium_io": true,
+    "pretty_name": "D48AS v4",
+    "pretty_name_azure": "Standard_D48as_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 4.32,
+          "reserved": {
+            "1yr": 2.8080000000000003,
+            "3yr": 1.9440000000000002
+          }
+        },
+        "windows": {
+          "ondemand": 6.48,
+          "hybridbenefit": 4.32,
+          "reserved": {
+            "1yr": 4.212000000000001,
+            "3yr": 2.9160000000000004
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 4.32,
+          "reserved": {
+            "1yr": 2.8080000000000003,
+            "3yr": 1.9440000000000002
+          }
+        },
+        "windows": {
+          "ondemand": 6.48,
+          "hybridbenefit": 4.32,
+          "reserved": {
+            "1yr": 4.212000000000001,
+            "3yr": 2.9160000000000004
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 384,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": true,
+      "size": 393216
+    },
+    "uncached_disk": 384,
+    "uncached_disk_io": null,
+    "vcpu": 48,
+    "vcpus_available": 48,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 3200,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d32asv4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 128,
+    "memory_maintenance": true,
+    "premium_io": true,
+    "pretty_name": "D32AS v4",
+    "pretty_name_azure": "Standard_D32as_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 2.88,
+          "reserved": {
+            "1yr": 1.8719999999999999,
+            "3yr": 1.296
+          }
+        },
+        "windows": {
+          "ondemand": 4.32,
+          "hybridbenefit": 2.88,
+          "reserved": {
+            "1yr": 2.808,
+            "3yr": 1.944
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 2.88,
+          "reserved": {
+            "1yr": 1.8719999999999999,
+            "3yr": 1.296
+          }
+        },
+        "windows": {
+          "ondemand": 4.32,
+          "hybridbenefit": 2.88,
+          "reserved": {
+            "1yr": 2.808,
+            "3yr": 1.944
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 256,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": true,
+      "size": 262144
+    },
+    "uncached_disk": 256,
+    "uncached_disk_io": null,
+    "vcpu": 32,
+    "vcpus_available": 32,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 1600,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d16av4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 64,
+    "memory_maintenance": true,
+    "premium_io": false,
+    "pretty_name": "D16A v4",
+    "pretty_name_azure": "Standard_D16a_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 1.44,
+          "reserved": {
+            "1yr": 0.9359999999999999,
+            "3yr": 0.648
+          }
+        },
+        "windows": {
+          "ondemand": 2.16,
+          "hybridbenefit": 1.44,
+          "reserved": {
+            "1yr": 1.404,
+            "3yr": 0.972
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 1.44,
+          "reserved": {
+            "1yr": 0.9359999999999999,
+            "3yr": 0.648
+          }
+        },
+        "windows": {
+          "ondemand": 2.16,
+          "hybridbenefit": 1.44,
+          "reserved": {
+            "1yr": 1.404,
+            "3yr": 0.972
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 400,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": false,
+      "size": 409600
+    },
+    "uncached_disk": 400,
+    "uncached_disk_io": null,
+    "vcpu": 16,
+    "vcpus_available": 16,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 200,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d2asv4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 8,
+    "memory_maintenance": true,
+    "premium_io": true,
+    "pretty_name": "D2AS v4",
+    "pretty_name_azure": "Standard_D2as_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 0.18,
+          "reserved": {
+            "1yr": 0.11699999999999999,
+            "3yr": 0.081
+          }
+        },
+        "windows": {
+          "ondemand": 0.27,
+          "hybridbenefit": 0.18,
+          "reserved": {
+            "1yr": 0.1755,
+            "3yr": 0.1215
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 0.18,
+          "reserved": {
+            "1yr": 0.11699999999999999,
+            "3yr": 0.081
+          }
+        },
+        "windows": {
+          "ondemand": 0.27,
+          "hybridbenefit": 0.18,
+          "reserved": {
+            "1yr": 0.1755,
+            "3yr": 0.1215
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 16,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": true,
+      "size": 16384
+    },
+    "uncached_disk": 16,
+    "uncached_disk_io": null,
+    "vcpu": 2,
+    "vcpus_available": 2,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  },
+  {
+    "ACU": 800,
+    "GPU": "0",
+    "accelerated_networking": true,
+    "arch": [
+      "x64"
+    ],
+    "availability_zones": {
+      "westus2": true
+    },
+    "cached_disk": 0,
+    "capacity_support": false,
+    "category": "generalpurpose",
+    "confidential": false,
+    "encryption": false,
+    "family": "d",
+    "hibernation": null,
+    "hyperv_generations": "V1,V2",
+    "instance_type": "d8asv4",
+    "iops": null,
+    "low_priority": false,
+    "memory": 32,
+    "memory_maintenance": true,
+    "premium_io": true,
+    "pretty_name": "D8AS v4",
+    "pretty_name_azure": "Standard_D8as_v4",
+    "pricing": {
+      "eastus": {
+        "linux": {
+          "ondemand": 0.72,
+          "reserved": {
+            "1yr": 0.46799999999999997,
+            "3yr": 0.324
+          }
+        },
+        "windows": {
+          "ondemand": 1.08,
+          "hybridbenefit": 0.72,
+          "reserved": {
+            "1yr": 0.702,
+            "3yr": 0.486
+          }
+        }
+      },
+      "westus2": {
+        "linux": {
+          "ondemand": 0.72,
+          "reserved": {
+            "1yr": 0.46799999999999997,
+            "3yr": 0.324
+          }
+        },
+        "windows": {
+          "ondemand": 1.08,
+          "hybridbenefit": 0.72,
+          "reserved": {
+            "1yr": 0.702,
+            "3yr": 0.486
+          }
+        }
+      }
+    },
+    "read_io": null,
+    "size": 64,
+    "storage": {
+      "devices": null,
+      "max_write_disks": null,
+      "nvme_ssd": true,
+      "size": 65536
+    },
+    "uncached_disk": 64,
+    "uncached_disk_io": null,
+    "vcpu": 8,
+    "vcpus_available": 8,
+    "vcpus_percore": 1,
+    "vm_deployment": null,
+    "write_io": null
+  }
+]
