@@ -41,6 +41,26 @@ const navItems = [
             },
         ],
     },
+    {
+        label: "GCP",
+        href: "/gcp",
+        children: [
+            {
+                label: "Compute Engine",
+                href: "/gcp",
+            },
+        ],
+    },
+    {
+        label: "OCI",
+        href: "/oci",
+        children: [
+            {
+                label: "Compute",
+                href: "/oci",
+            },
+        ],
+    },
 ];
 
 export default function TopNav() {

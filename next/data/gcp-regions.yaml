@@ -1,0 +1,73 @@
+- name: us-central1
+  displayname: US Central (Iowa)
+  zones:
+    - us-central1-a
+    - us-central1-b
+    - us-central1-c
+    - us-central1-f
+- name: us-east1
+  displayname: US East (South Carolina)
+  zones:
+    - us-east1-b
+    - us-east1-c
+    - us-east1-d
+- name: us-east4
+  displayname: US East (Northern Virginia)
+  zones:
+    - us-east4-a
+    - us-east4-b
+    - us-east4-c
+- name: us-west1
+  displayname: US West (Oregon)
+  zones:
+    - us-west1-a
+    - us-west1-b
+    - us-west1-c
+- name: us-west2
+  displayname: US West (Los Angeles)
+  zones:
+    - us-west2-a
+    - us-west2-b
+    - us-west2-c
+- name: us-west3
+  displayname: US West (Salt Lake City)
+  zones:
+    - us-west3-a
+    - us-west3-b
+    - us-west3-c
+- name: us-west4
+  displayname: US West (Las Vegas)
+  zones:
+    - us-west4-a
+    - us-west4-b
+    - us-west4-c
+- name: europe-west1
+  displayname: Europe West (Belgium)
+  zones:
+    - europe-west1-b
+    - europe-west1-c
+    - europe-west1-d
+- name: europe-west2
+  displayname: Europe West (London)
+  zones:
+    - europe-west2-a
+    - europe-west2-b
+    - europe-west2-c
+- name: europe-west3
+  displayname: Europe West (Frankfurt)
+  zones:
+    - europe-west3-a
+    - europe-west3-b
+    - europe-west3-c
+- name: asia-east1
+  displayname: Asia East (Taiwan)
+  zones:
+    - asia-east1-a
+    - asia-east1-b
+    - asia-east1-c
+- name: asia-southeast1
+  displayname: Asia Southeast (Singapore)
+  zones:
+    - asia-southeast1-a
+    - asia-southeast1-b
+    - asia-southeast1-c

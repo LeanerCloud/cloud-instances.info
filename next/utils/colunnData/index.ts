@@ -1,5 +1,7 @@
 export * as azure from "./azure";
 export * as ec2 from "./ec2";
+export * as gcp from "./gcp";
+export * as oci from "./oci";
 export * as cache from "./cache";
 export * as opensearch from "./opensearch";
 export * as rds from "./rds";

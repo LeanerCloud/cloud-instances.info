@@ -1,4 +1,4 @@
-.PHONY: build test test-short test-race test-coverage clean run lint
+.PHONY: build test test-short test-race test-coverage clean run lint generate-data generate-gcp-data generate-oci-data
 
 # Build the scraper
 build:
@@ -66,6 +66,21 @@ run-ec2: build
 compare:
 	AWS_PROFILE=framed python3 ../compare_scrapers.py
 
+# Generate frontend data
+generate-data: generate-gcp-data generate-oci-data
+
+generate-gcp-data:
+	@echo "Generating GCP data for frontend..."
+	@mkdir -p data
+	@go run ./cmd/generate-gcp-data ./data
+	@echo "✅ GCP data generation completed"
+
+generate-oci-data:
+	@echo "Generating OCI data for frontend..."
+	@mkdir -p data
+	@go run ./cmd/generate-oci-data ./data
+	@echo "✅ OCI data generation completed"
+
 # Help
 help:
 	@echo "Available targets:"
@@ -81,3 +96,4 @@ help:
 	@echo "  deps          - Install/update dependencies"
 	@echo "  run-ec2       - Run EC2 scraper only"
 	@echo "  compare       - Run comparison with Vantage data"
+	@echo "  generate-data - Generate GCP and OCI data for frontend"

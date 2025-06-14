@@ -184,7 +184,15 @@ export function useSearchTerm() {
 
 export function useSelectedRegion() {
     const pathname = usePathname();
-    const defaultRegion = pathname.includes("azure") ? "us-east" : "us-east-1";
+    let defaultRegion = "us-east-1"; // AWS default
+    
+    if (pathname.includes("azure")) {
+        defaultRegion = "us-east";
+    } else if (pathname.includes("gcp")) {
+        defaultRegion = "us-central1";
+    } else if (pathname.includes("oci")) {
+        defaultRegion = "us-ashburn-1";
+    }
 
     return useGSettingsValue("region", defaultRegion, pathname);
 }
@@ -210,9 +218,15 @@ export function useDuration() {
 
 export function useReservedTerm() {
     const pathname = usePathname();
-    const defaultReservedTerm = pathname.includes("azure")
-        ? "yrTerm1Standard.allUpfront"
-        : "yrTerm1Standard.noUpfront";
+    let defaultReservedTerm = "yrTerm1Standard.noUpfront"; // AWS default
+    
+    if (pathname.includes("azure")) {
+        defaultReservedTerm = "yrTerm1Standard.allUpfront";
+    } else if (pathname.includes("gcp")) {
+        defaultReservedTerm = "1yr"; // GCP committed use
+    } else if (pathname.includes("oci")) {
+        defaultReservedTerm = "1yr"; // OCI reserved
+    }
 
     return useGSettingsValue("reservedTerm", defaultReservedTerm);
 }
