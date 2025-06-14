@@ -40,7 +40,12 @@ export default function Filters<DataKey extends keyof typeof columnData>({
     reservedTermOptions,
     reservedLabel,
 }: FiltersProps<DataKey>) {
-    const columnVisibility = columnVisibilityAtoms[columnAtomKey].use();
+    const columnVisibilityAtom = columnVisibilityAtoms[columnAtomKey];
+    if (!columnVisibilityAtom) {
+        console.error(`Column visibility atom not found for key: ${columnAtomKey}`);
+        console.log('Available keys:', Object.keys(columnVisibilityAtoms));
+    }
+    const columnVisibility = columnVisibilityAtom?.use() || {};
     const [searchTerm, setSearchTerm] = useSearchTerm();
     const [selectedRegion, setSelectedRegion] = useSelectedRegion();
     const [pricingUnit, setPricingUnit] = usePricingUnit(ecuRename);
