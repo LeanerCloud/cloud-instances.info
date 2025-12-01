@@ -1,6 +1,3 @@
-import TranslationFriendlyLink from "@/components/TranslationFriendlyLink";
-import { buttonVariants } from "@/components/ui/button";
-
 export default function Footer() {
     return (
         <div className="border-t border-gray-3 h-[3rem] sticky bottom-0 text-xs text-gray-2 bg-background">
@@ -11,39 +8,26 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="hidden md:block">
-                    EC2Instances.info - Easy Amazon <b>EC2</b> Instance
-                    Comparison
+                    Cloud-Instances.info - Easy Cloud Instance Comparison
                 </div>
                 <div className="flex items-center gap-3">
                     <a
-                        href="https://handbook.vantage.sh/tools/instances/"
+                        href="https://github.com/LeanerCloud/cloud-instances.info"
                         target="_blank"
                         className="text-purple-brand text-underline hover:text-purple-0"
                     >
-                        Docs
+                        GitHub
                     </a>
                     <span>
-                        By{" "}
+                        Maintained by{" "}
                         <a
                             target="_blank"
-                            href="https://www.vantage.sh/lp/aws-instances-demo?utm_campaign=Instances%20Blog%20Clicks&utm_source=by-vantage"
+                            href="https://leanercloud.com"
                             className="text-purple-brand text-underline hover:text-purple-0"
                         >
-                            Vantage
+                            LeanerCloud
                         </a>
                     </span>
-                    <div className="hidden md:block">
-                        <TranslationFriendlyLink
-                            href="https://instances-api.vantage.sh/?utm_campaign=Instances%20Blog%20Clicks&utm_source=footer"
-                            target="_blank"
-                            className={buttonVariants({
-                                variant: "outline",
-                                size: "sm",
-                            })}
-                        >
-                            Get API Key
-                        </TranslationFriendlyLink>
-                    </div>
                 </div>
             </div>
         </div>
