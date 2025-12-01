@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ES2022",
+    "lib": ["ES2021"],
+    "moduleResolution": "node",
+    "types": ["@cloudflare/workers-types"],
+    "noEmitOnError": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
