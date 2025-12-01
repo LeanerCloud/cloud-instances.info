@@ -1,0 +1,15 @@
+{
+  "name": "r2-website-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for R2 static website",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write 'src/**/*.{js,ts}'"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250509.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  }
+}
