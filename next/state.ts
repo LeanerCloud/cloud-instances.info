@@ -152,12 +152,17 @@ function useGSettingsValue<Key extends keyof GSettings>(
 
     useEffect(() => {
         const path = pathname.split("?")[0];
-        const expectedKey = path.includes("azure")
-            ? "azure_settings"
-            : "ec2_settings";
+        let expectedKey = "ec2_settings";
+        if (path.includes("azure")) {
+            expectedKey = "azure_settings";
+        } else if (path.includes("gcp")) {
+            expectedKey = "gcp_settings";
+        } else if (path.includes("oci")) {
+            expectedKey = "oci_settings";
+        }
         if (!gSettingsHolder[0] || gSettingsHolder[0].key !== expectedKey) {
             const gSettings = new GSettings(
-                expectedKey === "azure_settings",
+                expectedKey === "azure_settings" || expectedKey === "gcp_settings" || expectedKey === "oci_settings",
                 path !== "/",
             );
             gSettingsHolder = [gSettings, gSettingsHolder[1] + 1];
@@ -187,7 +192,7 @@ export function useSelectedRegion() {
     let defaultRegion = "us-east-1"; // AWS default
     
     if (pathname.includes("azure")) {
-        defaultRegion = "us-east";
+        defaultRegion = "westeurope"; // Has best coverage (387 instances)
     } else if (pathname.includes("gcp")) {
         defaultRegion = "us-central1";
     } else if (pathname.includes("oci")) {

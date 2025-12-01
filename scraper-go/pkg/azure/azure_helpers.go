@@ -7,9 +7,9 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 )
 
-// convertToVantageNaming converts Azure naming to Vantage format
+// convertToNaming converts Azure naming to standard format
 // Standard_D4s_v3 -> d4sv3
-func (s *RealComputeScraper) convertToVantageNaming(azureName string) string {
+func (s *RealComputeScraper) convertToNaming(azureName string) string {
 	// Remove Standard_ or Basic_ prefix
 	name := strings.TrimPrefix(azureName, "Standard_")
 	name = strings.TrimPrefix(name, "Basic_")
@@ -21,8 +21,8 @@ func (s *RealComputeScraper) convertToVantageNaming(azureName string) string {
 	return name
 }
 
-// generateVantagePrettyName generates Vantage-style pretty names
-func (s *RealComputeScraper) generateVantagePrettyName(azureName string) string {
+// generatePrettyName generates standard pretty names
+func (s *RealComputeScraper) generatePrettyName(azureName string) string {
 	// Standard_D4s_v3 -> D4s v3
 	name := strings.TrimPrefix(azureName, "Standard_")
 	name = strings.TrimPrefix(name, "Basic_")
@@ -36,8 +36,8 @@ func (s *RealComputeScraper) generateVantagePrettyName(azureName string) string 
 	return strings.ToUpper(name)
 }
 
-// getVantageFamilyCode returns single letter family code like Vantage
-func (s *RealComputeScraper) getVantageFamilyCode(azureName string) string {
+// getFamilyCode returns single letter family code
+func (s *RealComputeScraper) getFamilyCode(azureName string) string {
 	name := strings.ToLower(azureName)
 	
 	switch {
@@ -66,8 +66,8 @@ func (s *RealComputeScraper) getVantageFamilyCode(azureName string) string {
 	}
 }
 
-// getVantageCategory returns Vantage category names
-func (s *RealComputeScraper) getVantageCategory(azureName string) string {
+// getCategory returns standard category names
+func (s *RealComputeScraper) getCategory(azureName string) string {
 	name := strings.ToLower(azureName)
 	
 	switch {
@@ -121,8 +121,8 @@ func (s *RealComputeScraper) supportsAcceleratedNetworking(azureName string) boo
 	return !strings.Contains(name, "_a1") && !strings.Contains(name, "_a0")
 }
 
-// getVantageStorageInfo creates Vantage-compatible storage structure
-func (s *RealComputeScraper) getVantageStorageInfo(size *armcompute.VirtualMachineSize) interface{} {
+// getStorageInfo creates standard storage structure
+func (s *RealComputeScraper) getStorageInfo(size *armcompute.VirtualMachineSize) interface{} {
 	storage := map[string]interface{}{
 		"devices":          nil,
 		"max_write_disks":  nil,
@@ -147,66 +147,21 @@ func (s *RealComputeScraper) getVantageStorageInfo(size *armcompute.VirtualMachi
 	return storage
 }
 
-// addVantageStylePricing adds Vantage-compatible pricing structure
-func (s *RealComputeScraper) addVantageStylePricing(instances map[string]*VantageAzureInstance, regions []string) {
-	for _, instance := range instances {
-		for _, region := range regions {
-			// Estimate pricing based on vCPUs and memory
-			vcpus := 1.0
-			if instance.VCPU != nil {
-				if v, ok := instance.VCPU.(int); ok {
-					vcpus = float64(v)
-				}
-			}
-			
-			memory := 1.0
-			if instance.Memory > 0 {
-				memory = instance.Memory
-			}
-			
-			// Base pricing estimation
-			basePrice := vcpus*0.05 + memory*0.01
-			
-			// Create Vantage-style pricing structure
-			linuxPricing := VantageAzureOSPricing{
-				OnDemand: basePrice,
-				Reserved: make(map[string]float64),
-			}
-			linuxPricing.Reserved["1yr"] = basePrice * 0.65
-			linuxPricing.Reserved["3yr"] = basePrice * 0.45
-			
-			windowsPricing := VantageAzureOSPricing{
-				OnDemand:      basePrice * 1.5, // Windows is typically more expensive
-				HybridBenefit: basePrice,        // Hybrid benefit matches Linux pricing
-				Reserved:      make(map[string]float64),
-			}
-			windowsPricing.Reserved["1yr"] = basePrice * 0.65 * 1.5
-			windowsPricing.Reserved["3yr"] = basePrice * 0.45 * 1.5
-			
-			pricing := VantageAzurePricing{
-				Linux:   linuxPricing,
-				Windows: windowsPricing,
-			}
-			
-			instance.Pricing[region] = pricing
-		}
-	}
-}
 
-// sampleVantageInstances returns a random sample of Vantage instances
-func (s *RealComputeScraper) sampleVantageInstances(instances map[string]*VantageAzureInstance, sampleSize int) map[string]*VantageAzureInstance {
+// sampleInstances returns a random sample of instances
+func (s *RealComputeScraper) sampleInstances(instances map[string]*AzureInstance, sampleSize int) map[string]*AzureInstance {
 	if sampleSize <= 0 || len(instances) <= sampleSize {
 		return instances
 	}
 	
 	// Convert to slice for sampling
-	allInstances := make([]*VantageAzureInstance, 0, len(instances))
+	allInstances := make([]*AzureInstance, 0, len(instances))
 	for _, inst := range instances {
 		allInstances = append(allInstances, inst)
 	}
 	
 	// Simple sampling (Fisher-Yates would be better but this works for demo)
-	sampled := make(map[string]*VantageAzureInstance)
+	sampled := make(map[string]*AzureInstance)
 	for i := 0; i < sampleSize && i < len(allInstances); i++ {
 		inst := allInstances[i]
 		sampled[inst.InstanceType] = inst

@@ -52,31 +52,31 @@ func TestValidationAgainstVantageData(t *testing.T) {
 	if subscriptionID == "" {
 		fmt.Println("No Azure credentials found, using cached data for comparison")
 		// Fall back to using existing real scraper output file
-		vantageData, ourData, err := loadComparisonData()
+		referenceData, ourData, err := loadComparisonData()
 		if err != nil {
 			t.Skipf("Could not load comparison data: %v", err)
 			return
 		}
 		
-		compareAzureData(t, vantageData, ourData)
+		compareAzureData(t, referenceData, ourData)
 		return
 	}
 
 	fmt.Printf("Found Azure subscription ID: %s\n", subscriptionID[:8]+"...")
 
 	// Fetch Vantage Azure data
-	vantageInstances, err := fetchVantageAzureData()
+	azureInstances, err := fetchAzureData()
 	if err != nil {
 		t.Skipf("Could not fetch Vantage Azure data: %v", err)
 		return
 	}
 
-	if len(vantageInstances) == 0 {
+	if len(azureInstances) == 0 {
 		t.Skip("No Vantage Azure instances found")
 		return
 	}
 
-	fmt.Printf("Fetched %d Azure instances from Vantage for validation\n", len(vantageInstances))
+	fmt.Printf("Fetched %d Azure instances from Vantage for validation\n", len(azureInstances))
 
 	// Run our scraper to get real data
 	ctx := context.Background()
@@ -103,17 +103,17 @@ func TestValidationAgainstVantageData(t *testing.T) {
 	fmt.Printf("Scraped %d Azure instances from our implementation\n", len(ourInstances))
 
 	// Compare data
-	compareAzureData(t, vantageInstances, ourInstances)
+	compareAzureData(t, azureInstances, ourInstances)
 	
 	// Detailed memory analysis
-	analyzeMemoryDifferences(t, vantageInstances, ourInstances)
+	analyzeMemoryDifferences(t, azureInstances, ourInstances)
 }
 
-// fetchVantageAzureData fetches Azure instance data from Vantage API
-func fetchVantageAzureData() ([]VantageAzureInstance, error) {
+// fetchAzureData fetches Azure instance data from reference API
+func fetchAzureData() ([]AzureInstance, error) {
 	client := &http.Client{Timeout: 30 * time.Second}
 	
-	resp, err := client.Get("https://instances.vantage.sh/azure/instances.json")
+	resp, err := client.Get("https://instances.reference.sh/azure/instances.json")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch Vantage Azure data: %v", err)
 	}
@@ -128,7 +128,7 @@ func fetchVantageAzureData() ([]VantageAzureInstance, error) {
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	var instances []VantageAzureInstance
+	var instances []AzureInstance
 	if err := json.Unmarshal(body, &instances); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
@@ -137,9 +137,9 @@ func fetchVantageAzureData() ([]VantageAzureInstance, error) {
 }
 
 // loadComparisonData loads both Vantage and our scraper data for comparison
-func loadComparisonData() ([]VantageAzureInstance, []VantageAzureInstance, error) {
+func loadComparisonData() ([]AzureInstance, []AzureInstance, error) {
 	// Load Vantage data
-	vantageInstances, err := fetchVantageAzureData()
+	azureInstances, err := fetchAzureData()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to fetch Vantage data: %v", err)
 	}
@@ -156,27 +156,27 @@ func loadComparisonData() ([]VantageAzureInstance, []VantageAzureInstance, error
 		return nil, nil, fmt.Errorf("failed to read our Azure data: %v", err)
 	}
 
-	var ourInstances []VantageAzureInstance
+	var ourInstances []AzureInstance
 	if err := json.Unmarshal(body, &ourInstances); err != nil {
 		return nil, nil, fmt.Errorf("failed to unmarshal our Azure data: %v", err)
 	}
 
-	return vantageInstances, ourInstances, nil
+	return azureInstances, ourInstances, nil
 }
 
 // compareAzureData performs detailed comparison between Vantage and our Azure data
-func compareAzureData(t *testing.T, vantageInstances, ourInstances []VantageAzureInstance) {
+func compareAzureData(t *testing.T, azureInstances, ourInstances []AzureInstance) {
 	fmt.Printf("\n=== AZURE DATA COMPARISON ===\n")
-	fmt.Printf("Vantage instances: %d\n", len(vantageInstances))
+	fmt.Printf("Vantage instances: %d\n", len(azureInstances))
 	fmt.Printf("Our instances: %d\n", len(ourInstances))
 
 	// Create maps for easier lookup
-	vantageMap := make(map[string]VantageAzureInstance)
-	for _, inst := range vantageInstances {
-		vantageMap[inst.InstanceType] = inst
+	azureMap := make(map[string]AzureInstance)
+	for _, inst := range azureInstances {
+		azureMap[inst.InstanceType] = inst
 	}
 
-	ourMap := make(map[string]VantageAzureInstance)
+	ourMap := make(map[string]AzureInstance)
 	for _, inst := range ourInstances {
 		ourMap[inst.InstanceType] = inst
 	}
@@ -188,17 +188,17 @@ func compareAzureData(t *testing.T, vantageInstances, ourInstances []VantageAzur
 
 	fmt.Printf("\n=== MATCHING INSTANCES ===\n")
 	for instanceType, ourInst := range ourMap {
-		if vantageInst, exists := vantageMap[instanceType]; exists {
+		if referenceInst, exists := azureMap[instanceType]; exists {
 			matchingInstances++
 			fmt.Printf("\n--- %s ---\n", instanceType)
-			compareInstanceFields(t, vantageInst, ourInst, fieldMatches, fieldMismatches)
+			compareInstanceFields(t, referenceInst, ourInst, fieldMatches, fieldMismatches)
 		}
 	}
 
 	// Check instances only in Vantage
 	onlyInVantage := 0
 	fmt.Printf("\n=== INSTANCES ONLY IN VANTAGE ===\n")
-	for instanceType := range vantageMap {
+	for instanceType := range azureMap {
 		if _, exists := ourMap[instanceType]; !exists {
 			onlyInVantage++
 			if onlyInVantage <= 10 { // Show first 10
@@ -214,7 +214,7 @@ func compareAzureData(t *testing.T, vantageInstances, ourInstances []VantageAzur
 	onlyInOurs := 0
 	fmt.Printf("\n=== INSTANCES ONLY IN OUR DATA ===\n")
 	for instanceType := range ourMap {
-		if _, exists := vantageMap[instanceType]; !exists {
+		if _, exists := azureMap[instanceType]; !exists {
 			onlyInOurs++
 			fmt.Printf("- %s\n", instanceType)
 		}
@@ -242,7 +242,7 @@ func compareAzureData(t *testing.T, vantageInstances, ourInstances []VantageAzur
 }
 
 // compareInstanceFields compares fields between two instances
-func compareInstanceFields(t *testing.T, vantage, ours VantageAzureInstance, matches, mismatches map[string]int) {
+func compareInstanceFields(t *testing.T, reference, ours AzureInstance, matches, mismatches map[string]int) {
 	// Helper to increment counters
 	recordResult := func(field string, match bool) {
 		if match {
@@ -253,57 +253,57 @@ func compareInstanceFields(t *testing.T, vantage, ours VantageAzureInstance, mat
 	}
 
 	// Compare basic fields
-	recordResult("InstanceType", vantage.InstanceType == ours.InstanceType)
-	recordResult("PrettyName", vantage.PrettyName == ours.PrettyName)
-	recordResult("Memory", vantage.Memory == ours.Memory)
-	recordResult("Category", vantage.Category == ours.Category)
-	recordResult("Family", vantage.Family == ours.Family)
-	recordResult("ACU", vantage.ACU == ours.ACU)
-	recordResult("GPU", vantage.GPU == ours.GPU)
-	recordResult("AcceleratedNetworking", vantage.AcceleratedNetworking == ours.AcceleratedNetworking)
-	recordResult("PremiumIO", vantage.PremiumIO == ours.PremiumIO)
-	recordResult("HypervGenerations", vantage.HypervGenerations == ours.HypervGenerations)
+	recordResult("InstanceType", reference.InstanceType == ours.InstanceType)
+	recordResult("PrettyName", reference.PrettyName == ours.PrettyName)
+	recordResult("Memory", reference.Memory == ours.Memory)
+	recordResult("Category", reference.Category == ours.Category)
+	recordResult("Family", reference.Family == ours.Family)
+	recordResult("ACU", reference.ACU == ours.ACU)
+	recordResult("GPU", reference.GPU == ours.GPU)
+	recordResult("AcceleratedNetworking", reference.AcceleratedNetworking == ours.AcceleratedNetworking)
+	recordResult("PremiumIO", reference.PremiumIO == ours.PremiumIO)
+	recordResult("HypervGenerations", reference.HypervGenerations == ours.HypervGenerations)
 
 	// Compare vCPU (handle different types)
 	vCPUMatch := false
-	if vantage.VCPU != nil && ours.VCPU != nil {
-		vCPUMatch = reflect.DeepEqual(vantage.VCPU, ours.VCPU)
+	if reference.VCPU != nil && ours.VCPU != nil {
+		vCPUMatch = reflect.DeepEqual(reference.VCPU, ours.VCPU)
 	} else {
-		vCPUMatch = (vantage.VCPU == nil && ours.VCPU == nil)
+		vCPUMatch = (reference.VCPU == nil && ours.VCPU == nil)
 	}
 	recordResult("VCPU", vCPUMatch)
 
 	// Compare arrays
-	archMatch := reflect.DeepEqual(vantage.Arch, ours.Arch)
+	archMatch := reflect.DeepEqual(reference.Arch, ours.Arch)
 	recordResult("Arch", archMatch)
 
 	// Show specific differences for this instance
-	if vantage.Memory != ours.Memory {
+	if reference.Memory != ours.Memory {
 		fmt.Printf("  Memory: Vantage=%.1fGB, Ours=%.1fGB (diff=%.1fGB)\n", 
-			vantage.Memory, ours.Memory, ours.Memory-vantage.Memory)
+			reference.Memory, ours.Memory, ours.Memory-reference.Memory)
 	}
-	if vantage.Category != ours.Category {
-		fmt.Printf("  Category: Vantage='%s', Ours='%s'\n", vantage.Category, ours.Category)
+	if reference.Category != ours.Category {
+		fmt.Printf("  Category: Vantage='%s', Ours='%s'\n", reference.Category, ours.Category)
 	}
-	if vantage.ACU != ours.ACU {
-		fmt.Printf("  ACU: Vantage=%d, Ours=%d\n", vantage.ACU, ours.ACU)
+	if reference.ACU != ours.ACU {
+		fmt.Printf("  ACU: Vantage=%d, Ours=%d\n", reference.ACU, ours.ACU)
 	}
 	if !vCPUMatch {
-		fmt.Printf("  VCPU: Vantage=%v, Ours=%v\n", vantage.VCPU, ours.VCPU)
+		fmt.Printf("  VCPU: Vantage=%v, Ours=%v\n", reference.VCPU, ours.VCPU)
 	}
 }
 
 // analyzeMemoryDifferences performs detailed memory difference analysis
-func analyzeMemoryDifferences(t *testing.T, vantageInstances, ourInstances []VantageAzureInstance) {
+func analyzeMemoryDifferences(t *testing.T, azureInstances, ourInstances []AzureInstance) {
 	fmt.Printf("\n=== MEMORY DIFFERENCES ANALYSIS ===\n")
 	
 	// Create maps for easier lookup
-	vantageMap := make(map[string]VantageAzureInstance)
-	for _, inst := range vantageInstances {
-		vantageMap[inst.InstanceType] = inst
+	azureMap := make(map[string]AzureInstance)
+	for _, inst := range azureInstances {
+		azureMap[inst.InstanceType] = inst
 	}
 
-	ourMap := make(map[string]VantageAzureInstance)
+	ourMap := make(map[string]AzureInstance)
 	for _, inst := range ourInstances {
 		ourMap[inst.InstanceType] = inst
 	}
@@ -320,15 +320,15 @@ func analyzeMemoryDifferences(t *testing.T, vantageInstances, ourInstances []Van
 	totalMatches := 0
 	
 	for instanceType, ourInst := range ourMap {
-		if vantageInst, exists := vantageMap[instanceType]; exists {
+		if referenceInst, exists := azureMap[instanceType]; exists {
 			totalMatches++
-			if vantageInst.Memory != ourInst.Memory && vantageInst.Memory > 0 && ourInst.Memory > 0 {
-				diff := ourInst.Memory - vantageInst.Memory
-				diffPercent := (diff / vantageInst.Memory) * 100
+			if referenceInst.Memory != ourInst.Memory && referenceInst.Memory > 0 && ourInst.Memory > 0 {
+				diff := ourInst.Memory - referenceInst.Memory
+				diffPercent := (diff / referenceInst.Memory) * 100
 				
 				memoryDiffs = append(memoryDiffs, MemoryDiff{
 					InstanceType:   instanceType,
-					VantageMemory:  vantageInst.Memory,
+					VantageMemory:  referenceInst.Memory,
 					OurMemory:      ourInst.Memory,
 					Difference:     diff,
 					DiffPercent:    diffPercent,
@@ -425,16 +425,16 @@ func TestVantageDataStructure(t *testing.T) {
 		t.Skip("Skipping Vantage data structure test in short mode")
 	}
 
-	vantageInstances, err := fetchVantageAzureData()
+	azureInstances, err := fetchAzureData()
 	if err != nil {
 		t.Skipf("Could not fetch Vantage Azure data: %v", err)
 		return
 	}
 
-	require.Greater(t, len(vantageInstances), 0, "Should have some instances")
+	require.Greater(t, len(azureInstances), 0, "Should have some instances")
 
 	// Test structure of first instance
-	first := vantageInstances[0]
+	first := azureInstances[0]
 	
 	assert.NotEmpty(t, first.InstanceType, "Instance type should not be empty")
 	assert.NotEmpty(t, first.PrettyName, "Pretty name should not be empty")
@@ -446,7 +446,7 @@ func TestVantageDataStructure(t *testing.T) {
 	
 	// Find a region with pricing data
 	var sampleRegion string
-	var samplePricing VantageAzurePricing
+	var samplePricing AzurePricing
 	for region, pricing := range first.Pricing {
 		sampleRegion = region
 		samplePricing = pricing
@@ -460,7 +460,7 @@ func TestVantageDataStructure(t *testing.T) {
 	hasWindows := samplePricing.Windows.OnDemand > 0 || samplePricing.Windows.Basic > 0
 	assert.True(t, hasLinux || hasWindows, "Should have pricing for at least one OS")
 
-	fmt.Printf("Vantage data validation passed for %d Azure instances\n", len(vantageInstances))
+	fmt.Printf("Vantage data validation passed for %d Azure instances\n", len(azureInstances))
 }
 
 // TestOurDataConsistency tests consistency within our own Azure scraper data
@@ -479,7 +479,7 @@ func TestOurDataConsistency(t *testing.T) {
 		return
 	}
 
-	var instances []VantageAzureInstance
+	var instances []AzureInstance
 	if err := json.Unmarshal(body, &instances); err != nil {
 		t.Skipf("Could not unmarshal our Azure data: %v", err)
 		return

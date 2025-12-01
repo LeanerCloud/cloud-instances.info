@@ -1,0 +1,56 @@
+- name: us-ashburn-1
+  displayname: US East (Ashburn)
+  availabilitydomains:
+    - Uocm:US-ASHBURN-AD-1
+    - Uocm:US-ASHBURN-AD-2
+    - Uocm:US-ASHBURN-AD-3
+- name: us-phoenix-1
+  displayname: US West (Phoenix)
+  availabilitydomains:
+    - Uocm:PHX-AD-1
+    - Uocm:PHX-AD-2
+    - Uocm:PHX-AD-3
+- name: ca-central-1
+  displayname: Canada Central (Toronto)
+  availabilitydomains:
+    - Uocm:CA-CENTRAL-1-AD-1
+- name: eu-frankfurt-1
+  displayname: Germany Central (Frankfurt)
+  availabilitydomains:
+    - Uocm:EU-FRANKFURT-1-AD-1
+    - Uocm:EU-FRANKFURT-1-AD-2
+    - Uocm:EU-FRANKFURT-1-AD-3
+- name: eu-zurich-1
+  displayname: Switzerland North (Zurich)
+  availabilitydomains:
+    - Uocm:EU-ZURICH-1-AD-1
+- name: uk-london-1
+  displayname: UK South (London)
+  availabilitydomains:
+    - Uocm:UK-LONDON-1-AD-1
+    - Uocm:UK-LONDON-1-AD-2
+    - Uocm:UK-LONDON-1-AD-3
+- name: ap-tokyo-1
+  displayname: Japan East (Tokyo)
+  availabilitydomains:
+    - Uocm:AP-TOKYO-1-AD-1
+- name: ap-osaka-1
+  displayname: Japan Central (Osaka)
+  availabilitydomains:
+    - Uocm:AP-OSAKA-1-AD-1
+- name: ap-mumbai-1
+  displayname: India West (Mumbai)
+  availabilitydomains:
+    - Uocm:AP-MUMBAI-1-AD-1
+- name: ap-seoul-1
+  displayname: South Korea Central (Seoul)
+  availabilitydomains:
+    - Uocm:AP-SEOUL-1-AD-1
+- name: ap-sydney-1
+  displayname: Australia East (Sydney)
+  availabilitydomains:
+    - Uocm:AP-SYDNEY-1-AD-1
+- name: sa-saopaulo-1
+  displayname: Brazil East (Sao Paulo)
+  availabilitydomains:
+    - Uocm:SA-SAOPAULO-1-AD-1

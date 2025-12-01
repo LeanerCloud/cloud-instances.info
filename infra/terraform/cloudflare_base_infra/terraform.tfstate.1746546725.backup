@@ -1,0 +1,129 @@
+{
+  "version": 4,
+  "terraform_version": "1.9.5",
+  "serial": 43,
+  "lineage": "b0e71a3a-d7c9-d22a-8241-c43a2fc1c657",
+  "outputs": {
+    "bucket_name": {
+      "value": "cloud-instances-info",
+      "type": "string"
+    },
+    "cloudflare_name_servers": {
+      "value": [
+        "kelly.ns.cloudflare.com",
+        "rodney.ns.cloudflare.com"
+      ],
+      "type": [
+        "list",
+        "string"
+      ]
+    },
+    "website_url": {
+      "value": "https://cloud-instances.info",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "cloudflare_r2_bucket",
+      "name": "website_bucket",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "2ed2783fb9ef938c9f9149a58cab487f",
+            "creation_date": "2025-05-06T14:55:11.858Z",
+            "id": "cloud-instances-info",
+            "jurisdiction": null,
+            "location": null,
+            "name": "cloud-instances-info",
+            "storage_class": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "cloudflare_zone",
+      "name": "domain_zone",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account": {
+              "id": "2ed2783fb9ef938c9f9149a58cab487f"
+            },
+            "activated_on": "2025-05-06T15:19:31Z",
+            "created_on": "2025-05-06T14:58:29Z",
+            "development_mode": 0,
+            "id": "d3ce74f99acb03401e2aa8d5f8e4eb12",
+            "meta": {
+              "cdn_only": null,
+              "custom_certificate_quota": 0,
+              "dns_only": null,
+              "foundation_dns": null,
+              "page_rule_quota": 3,
+              "phishing_detected": false,
+              "step": 4
+            },
+            "modified_on": "2025-05-06T15:19:31Z",
+            "name": "cloud-instances.info",
+            "name_servers": [
+              "kelly.ns.cloudflare.com",
+              "rodney.ns.cloudflare.com"
+            ],
+            "original_dnshost": null,
+            "original_name_servers": [
+              "dns1.registrar-servers.com",
+              "dns2.registrar-servers.com"
+            ],
+            "original_registrar": "namecheap, inc. (id: 1068)",
+            "owner": {
+              "id": null,
+              "name": null,
+              "type": "user"
+            },
+            "paused": false,
+            "status": "active",
+            "type": "full",
+            "vanity_name_servers": null,
+            "verification_key": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "namecheap_domain_records",
+      "name": "domain_records",
+      "provider": "provider[\"registry.terraform.io/namecheap/namecheap\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "domain": "cloud-instances.info",
+            "email_type": null,
+            "id": "cloud-instances.info",
+            "mode": "OVERWRITE",
+            "nameservers": [
+              "kelly.ns.cloudflare.com",
+              "rodney.ns.cloudflare.com"
+            ],
+            "record": []
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "cloudflare_zone.domain_zone"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

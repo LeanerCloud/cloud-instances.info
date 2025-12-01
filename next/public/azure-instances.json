@@ -1,0 +1,772 @@
+[
+  {
+    "instance_type": "Standard_B1s",
+    "pretty_name": "B1s",
+    "vcpu": 0,
+    "acu": "100",
+    "memory": 1,
+    "family": "General purpose",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 8,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.0114,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.008,
+            "yrTerm3Standard.allUpfront": 0.0057
+          },
+          "spot": 0.00342
+        },
+        "windows": {
+          "ondemand": 0.1074,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.07500000000000001,
+            "yrTerm3Standard.allUpfront": 0.0727
+          },
+          "spot": 0.03222
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.0104,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0073,
+            "yrTerm3Standard.allUpfront": 0.0052
+          },
+          "spot": 0.00312
+        },
+        "windows": {
+          "ondemand": 0.1064,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0743,
+            "yrTerm3Standard.allUpfront": 0.0722
+          },
+          "spot": 0.03192
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.0124,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0087,
+            "yrTerm3Standard.allUpfront": 0.0062
+          },
+          "spot": 0.0037199999999999998
+        },
+        "windows": {
+          "ondemand": 0.1084,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0757,
+            "yrTerm3Standard.allUpfront": 0.0732
+          },
+          "spot": 0.03252
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_B2s",
+    "pretty_name": "B2s",
+    "vcpu": 0,
+    "acu": "100",
+    "memory": 4,
+    "family": "General purpose",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 32,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.0456,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0319,
+            "yrTerm3Standard.allUpfront": 0.0228
+          },
+          "spot": 0.01368
+        },
+        "windows": {
+          "ondemand": 0.1416,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0989,
+            "yrTerm3Standard.allUpfront": 0.0898
+          },
+          "spot": 0.04248
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.0416,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0291,
+            "yrTerm3Standard.allUpfront": 0.0208
+          },
+          "spot": 0.01248
+        },
+        "windows": {
+          "ondemand": 0.1376,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0961,
+            "yrTerm3Standard.allUpfront": 0.0878
+          },
+          "spot": 0.04128
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.0496,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0347,
+            "yrTerm3Standard.allUpfront": 0.0248
+          },
+          "spot": 0.014879999999999999
+        },
+        "windows": {
+          "ondemand": 0.1456,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.10170000000000001,
+            "yrTerm3Standard.allUpfront": 0.0918
+          },
+          "spot": 0.043680000000000004
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_D2s_v3",
+    "pretty_name": "D2s v3",
+    "vcpu": 0,
+    "acu": "100",
+    "memory": 8,
+    "family": "General purpose",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 64,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.106,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0742,
+            "yrTerm3Standard.allUpfront": 0.053
+          },
+          "spot": 0.031799999999999995
+        },
+        "windows": {
+          "ondemand": 0.202,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1412,
+            "yrTerm3Standard.allUpfront": 0.12
+          },
+          "spot": 0.0606
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.096,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0672,
+            "yrTerm3Standard.allUpfront": 0.048
+          },
+          "spot": 0.0288
+        },
+        "windows": {
+          "ondemand": 0.192,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.13419999999999999,
+            "yrTerm3Standard.allUpfront": 0.115
+          },
+          "spot": 0.0576
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.11,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.077,
+            "yrTerm3Standard.allUpfront": 0.055
+          },
+          "spot": 0.033
+        },
+        "windows": {
+          "ondemand": 0.20600000000000002,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.14400000000000002,
+            "yrTerm3Standard.allUpfront": 0.122
+          },
+          "spot": 0.0618
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_D4s_v3",
+    "pretty_name": "D4s v3",
+    "vcpu": 0,
+    "acu": "100",
+    "memory": 16,
+    "family": "General purpose",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 128,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.212,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1484,
+            "yrTerm3Standard.allUpfront": 0.106
+          },
+          "spot": 0.06359999999999999
+        },
+        "windows": {
+          "ondemand": 0.308,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2154,
+            "yrTerm3Standard.allUpfront": 0.173
+          },
+          "spot": 0.0924
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.192,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1344,
+            "yrTerm3Standard.allUpfront": 0.096
+          },
+          "spot": 0.0576
+        },
+        "windows": {
+          "ondemand": 0.28800000000000003,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2014,
+            "yrTerm3Standard.allUpfront": 0.163
+          },
+          "spot": 0.0864
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.22,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.154,
+            "yrTerm3Standard.allUpfront": 0.11
+          },
+          "spot": 0.066
+        },
+        "windows": {
+          "ondemand": 0.316,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.221,
+            "yrTerm3Standard.allUpfront": 0.177
+          },
+          "spot": 0.0948
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_D8s_v3",
+    "pretty_name": "D8s v3",
+    "vcpu": 0,
+    "acu": "100",
+    "memory": 32,
+    "family": "General purpose",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 256,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.424,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2968,
+            "yrTerm3Standard.allUpfront": 0.212
+          },
+          "spot": 0.12719999999999998
+        },
+        "windows": {
+          "ondemand": 0.52,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.3638,
+            "yrTerm3Standard.allUpfront": 0.279
+          },
+          "spot": 0.156
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.384,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2688,
+            "yrTerm3Standard.allUpfront": 0.192
+          },
+          "spot": 0.1152
+        },
+        "windows": {
+          "ondemand": 0.48,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.3358,
+            "yrTerm3Standard.allUpfront": 0.259
+          },
+          "spot": 0.144
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.44,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.308,
+            "yrTerm3Standard.allUpfront": 0.22
+          },
+          "spot": 0.132
+        },
+        "windows": {
+          "ondemand": 0.536,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.375,
+            "yrTerm3Standard.allUpfront": 0.28700000000000003
+          },
+          "spot": 0.1608
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_E2s_v3",
+    "pretty_name": "E2s v3",
+    "vcpu": 0,
+    "acu": "160",
+    "memory": 16,
+    "family": "Memory optimized",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 128,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.139,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0973,
+            "yrTerm3Standard.allUpfront": 0.0695
+          },
+          "spot": 0.0417
+        },
+        "windows": {
+          "ondemand": 0.23500000000000001,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1643,
+            "yrTerm3Standard.allUpfront": 0.1365
+          },
+          "spot": 0.07050000000000001
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.126,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0882,
+            "yrTerm3Standard.allUpfront": 0.063
+          },
+          "spot": 0.0378
+        },
+        "windows": {
+          "ondemand": 0.222,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1552,
+            "yrTerm3Standard.allUpfront": 0.13
+          },
+          "spot": 0.06659999999999999
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.146,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1022,
+            "yrTerm3Standard.allUpfront": 0.073
+          },
+          "spot": 0.0438
+        },
+        "windows": {
+          "ondemand": 0.242,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.16920000000000002,
+            "yrTerm3Standard.allUpfront": 0.14
+          },
+          "spot": 0.0726
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_E4s_v3",
+    "pretty_name": "E4s v3",
+    "vcpu": 0,
+    "acu": "160",
+    "memory": 32,
+    "family": "Memory optimized",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 256,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.278,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1946,
+            "yrTerm3Standard.allUpfront": 0.139
+          },
+          "spot": 0.0834
+        },
+        "windows": {
+          "ondemand": 0.374,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2616,
+            "yrTerm3Standard.allUpfront": 0.20600000000000002
+          },
+          "spot": 0.1122
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.252,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1764,
+            "yrTerm3Standard.allUpfront": 0.126
+          },
+          "spot": 0.0756
+        },
+        "windows": {
+          "ondemand": 0.348,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2434,
+            "yrTerm3Standard.allUpfront": 0.193
+          },
+          "spot": 0.10439999999999999
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.292,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2044,
+            "yrTerm3Standard.allUpfront": 0.146
+          },
+          "spot": 0.0876
+        },
+        "windows": {
+          "ondemand": 0.388,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.2714,
+            "yrTerm3Standard.allUpfront": 0.213
+          },
+          "spot": 0.1164
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_F2s_v2",
+    "pretty_name": "F2s v2",
+    "vcpu": 0,
+    "acu": "195",
+    "memory": 4,
+    "family": "Compute optimized",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 32,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.0935,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0655,
+            "yrTerm3Standard.allUpfront": 0.0468
+          },
+          "spot": 0.02805
+        },
+        "windows": {
+          "ondemand": 0.1895,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1325,
+            "yrTerm3Standard.allUpfront": 0.11380000000000001
+          },
+          "spot": 0.05685
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.085,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0595,
+            "yrTerm3Standard.allUpfront": 0.0425
+          },
+          "spot": 0.025500000000000002
+        },
+        "windows": {
+          "ondemand": 0.181,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1265,
+            "yrTerm3Standard.allUpfront": 0.10950000000000001
+          },
+          "spot": 0.054299999999999994
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.098,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.0686,
+            "yrTerm3Standard.allUpfront": 0.049
+          },
+          "spot": 0.0294
+        },
+        "windows": {
+          "ondemand": 0.194,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1356,
+            "yrTerm3Standard.allUpfront": 0.116
+          },
+          "spot": 0.0582
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_F4s_v2",
+    "pretty_name": "F4s v2",
+    "vcpu": 0,
+    "acu": "195",
+    "memory": 8,
+    "family": "Compute optimized",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 64,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 0.186,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1302,
+            "yrTerm3Standard.allUpfront": 0.093
+          },
+          "spot": 0.055799999999999995
+        },
+        "windows": {
+          "ondemand": 0.28200000000000003,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.19720000000000001,
+            "yrTerm3Standard.allUpfront": 0.16
+          },
+          "spot": 0.08460000000000001
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 0.169,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1183,
+            "yrTerm3Standard.allUpfront": 0.0845
+          },
+          "spot": 0.0507
+        },
+        "windows": {
+          "ondemand": 0.265,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.18530000000000002,
+            "yrTerm3Standard.allUpfront": 0.15150000000000002
+          },
+          "spot": 0.0795
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 0.195,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.1365,
+            "yrTerm3Standard.allUpfront": 0.0975
+          },
+          "spot": 0.058499999999999996
+        },
+        "windows": {
+          "ondemand": 0.29100000000000004,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 0.20350000000000001,
+            "yrTerm3Standard.allUpfront": 0.1645
+          },
+          "spot": 0.0873
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "Standard_M8ms",
+    "pretty_name": "M8ms",
+    "vcpu": 0,
+    "acu": "160",
+    "memory": 218.75,
+    "family": "Memory optimized",
+    "physical_processor": "Intel Xeon",
+    "architecture": [
+      "x64"
+    ],
+    "accelerated_networking": false,
+    "storage": {
+      "temp_disk": true,
+      "temp_disk_size_max": 1750,
+      "max_data_disks": 0,
+      "premium_io": true
+    },
+    "max_nics": 0,
+    "bandwidth": 0,
+    "pricing": {
+      "eu-west": {
+        "linux": {
+          "ondemand": 2.3954,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.6768,
+            "yrTerm3Standard.allUpfront": 1.1977
+          },
+          "spot": 0.7186199999999999
+        },
+        "windows": {
+          "ondemand": 2.4914,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.7438,
+            "yrTerm3Standard.allUpfront": 1.2647
+          },
+          "spot": 0.74742
+        }
+      },
+      "us-east": {
+        "linux": {
+          "ondemand": 2.1776,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.5243,
+            "yrTerm3Standard.allUpfront": 1.0888
+          },
+          "spot": 0.65328
+        },
+        "windows": {
+          "ondemand": 2.2736,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.5913,
+            "yrTerm3Standard.allUpfront": 1.1558
+          },
+          "spot": 0.68208
+        }
+      },
+      "us-west": {
+        "linux": {
+          "ondemand": 2.6131,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.8292,
+            "yrTerm3Standard.allUpfront": 1.3066
+          },
+          "spot": 0.78393
+        },
+        "windows": {
+          "ondemand": 2.7091000000000003,
+          "reserved": {
+            "yrTerm1Standard.allUpfront": 1.8961999999999999,
+            "yrTerm3Standard.allUpfront": 1.3736
+          },
+          "spot": 0.8127300000000001
+        }
+      }
+    }
+  }
+]

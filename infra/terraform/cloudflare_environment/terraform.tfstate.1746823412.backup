@@ -1,0 +1,160 @@
+{
+  "version": 4,
+  "terraform_version": "1.9.5",
+  "serial": 64,
+  "lineage": "136481d8-131e-1de4-9d03-396a2aa156ac",
+  "outputs": {
+    "bucket_name": {
+      "value": "pull-request-1",
+      "type": "string"
+    },
+    "website_url": {
+      "value": "https://pull-request-1.cloud-instances.info",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "cloudflare_zone",
+      "name": "domain_zone",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account": {
+              "id": "2ed2783fb9ef938c9f9149a58cab487f",
+              "name": "Cristi@autospotting.org's Account"
+            },
+            "activated_on": "2025-05-06T15:19:31Z",
+            "created_on": "2025-05-06T14:58:29Z",
+            "development_mode": 0,
+            "filter": null,
+            "id": null,
+            "meta": {
+              "cdn_only": null,
+              "custom_certificate_quota": 0,
+              "dns_only": null,
+              "foundation_dns": null,
+              "page_rule_quota": 3,
+              "phishing_detected": false,
+              "step": 4
+            },
+            "modified_on": "2025-05-08T15:15:37Z",
+            "name": "cloud-instances.info",
+            "name_servers": [
+              "kelly.ns.cloudflare.com",
+              "rodney.ns.cloudflare.com"
+            ],
+            "original_dnshost": null,
+            "original_name_servers": [
+              "dns1.registrar-servers.com",
+              "dns2.registrar-servers.com"
+            ],
+            "original_registrar": "namecheap, inc. (id: 1068)",
+            "owner": {
+              "id": null,
+              "name": null,
+              "type": "user"
+            },
+            "paused": false,
+            "status": "active",
+            "type": "full",
+            "vanity_name_servers": null,
+            "verification_key": null,
+            "zone_id": "d3ce74f99acb03401e2aa8d5f8e4eb12"
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "external",
+      "name": "worker_script",
+      "provider": "provider[\"registry.terraform.io/hashicorp/external\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "-",
+            "program": [
+              "./worker/build.sh",
+              "./worker"
+            ],
+            "query": null,
+            "result": {
+              "content": "LyoqCiAqIFdlbGNvbWUgdG8gQ2xvdWRmbGFyZSBXb3JrZXJzISBUaGlzIGlzIHlvdXIgZmlyc3Qgd29ya2VyLgogKiBMZWFybiBtb3JlIGF0IGh0dHBzOi8vZGV2ZWxvcGVycy5jbG91ZGZsYXJlLmNvbS93b3JrZXJzLwogKi8KZXhwb3J0IGRlZmF1bHQgewogICAgYXN5bmMgZmV0Y2gocmVxdWVzdCwgZW52LCBjdHgpIHsKICAgICAgICBjb25zdCB1cmwgPSBuZXcgVVJMKHJlcXVlc3QudXJsKTsKICAgICAgICAvLyBIYW5kbGUgYm90aCB0aGUgcm9vdCBwYXRoIGFuZCBhbnkgVVJMIHdpdGggcXVlcnkgcGFyYW1ldGVycwogICAgICAgIGlmICh1cmwucGF0aG5hbWUgPT09ICIvIiB8fCB1cmwucGF0aG5hbWUgPT09ICIiKSB7CiAgICAgICAgICAgIC8vIENyZWF0ZSBhIG5ldyBVUkwgd2l0aCB0aGUgc2FtZSBvcmlnaW4gYnV0IC9pbmRleC5odG1sIHBhdGgKICAgICAgICAgICAgLy8gUHJlc2VydmUgYW55IHF1ZXJ5IHBhcmFtZXRlcnMgZnJvbSB0aGUgb3JpZ2luYWwgVVJMCiAgICAgICAgICAgIGNvbnN0IGluZGV4VXJsID0gbmV3IFVSTCgiL2luZGV4Lmh0bWwiLCB1cmwub3JpZ2luKTsKICAgICAgICAgICAgLy8gQ29weSBhbGwgcXVlcnkgcGFyYW1ldGVycyBmcm9tIHRoZSBvcmlnaW5hbCBVUkwKICAgICAgICAgICAgdXJsLnNlYXJjaFBhcmFtcy5mb3JFYWNoKCh2YWx1ZSwga2V5KSA9PiB7CiAgICAgICAgICAgICAgICBpbmRleFVybC5zZWFyY2hQYXJhbXMuYXBwZW5kKGtleSwgdmFsdWUpOwogICAgICAgICAgICB9KTsKICAgICAgICAgICAgLy8gUmV0dXJuIGEgcmVkaXJlY3QgcmVzcG9uc2Ugd2l0aCBjYWNoaW5nIGhlYWRlcnMKICAgICAgICAgICAgcmV0dXJuIG5ldyBSZXNwb25zZShudWxsLCB7CiAgICAgICAgICAgICAgICBzdGF0dXM6IDMwMSwKICAgICAgICAgICAgICAgIGhlYWRlcnM6IHsKICAgICAgICAgICAgICAgICAgICAiTG9jYXRpb24iOiBpbmRleFVybC50b1N0cmluZygpLAogICAgICAgICAgICAgICAgICAgICJDYWNoZS1Db250cm9sIjogInB1YmxpYywgbWF4LWFnZT04NjQwMCIsCiAgICAgICAgICAgICAgICAgICAgIkNETi1DYWNoZS1Db250cm9sIjogIm1heC1hZ2U9ODY0MDAiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0pOwogICAgICAgIH0KICAgICAgICAvLyBUaGlzIGNvZGUgc2hvdWxkIG5ldmVyIGJlIHJlYWNoZWQgaWYgcm91dGVzIGFyZSBjb25maWd1cmVkIGNvcnJlY3RseQogICAgICAgIC8vIEJ1dCBqdXN0IGluIGNhc2UsIHBhc3MgdGhyb3VnaCB0byB0aGUgb3JpZ2luIHRvIGF2b2lkIDQwNCBlcnJvcnMKICAgICAgICByZXR1cm4gZmV0Y2gocmVxdWVzdCk7CiAgICB9Cn07Cg=="
+            },
+            "working_dir": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "cloudflare_r2_bucket",
+      "name": "website_bucket",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "2ed2783fb9ef938c9f9149a58cab487f",
+            "creation_date": "2025-05-09T14:23:54.908Z",
+            "id": "pull-request-1",
+            "jurisdiction": null,
+            "location": null,
+            "name": "pull-request-1",
+            "storage_class": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "cloudflare_workers_script",
+      "name": "r2_website_worker",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "2ed2783fb9ef938c9f9149a58cab487f",
+            "assets": null,
+            "bindings": [],
+            "body_part": null,
+            "compatibility_date": "2025-05-09",
+            "compatibility_flags": null,
+            "content": "/**\n * Welcome to Cloudflare Workers! This is your first worker.\n * Learn more at https://developers.cloudflare.com/workers/\n */\nexport default {\n    async fetch(request, env, ctx) {\n        const url = new URL(request.url);\n        // Handle both the root path and any URL with query parameters\n        if (url.pathname === \"/\" || url.pathname === \"\") {\n            // Create a new URL with the same origin but /index.html path\n            // Preserve any query parameters from the original URL\n            const indexUrl = new URL(\"/index.html\", url.origin);\n            // Copy all query parameters from the original URL\n            url.searchParams.forEach((value, key) =\u003e {\n                indexUrl.searchParams.append(key, value);\n            });\n            // Return a redirect response with caching headers\n            return new Response(null, {\n                status: 301,\n                headers: {\n                    \"Location\": indexUrl.toString(),\n                    \"Cache-Control\": \"public, max-age=86400\",\n                    \"CDN-Cache-Control\": \"max-age=86400\"\n                }\n            });\n        }\n        // This code should never be reached if routes are configured correctly\n        // But just in case, pass through to the origin to avoid 404 errors\n        return fetch(request);\n    }\n};\n",
+            "created_on": "2025-05-09T19:16:19Z",
+            "etag": "fdce4ae04dab72acd6ca914b837db0e98df7a2fbb1f1dab10a31f685feb64a32",
+            "has_assets": false,
+            "has_modules": false,
+            "id": "pull-request-1-worker",
+            "keep_assets": null,
+            "keep_bindings": null,
+            "logpush": false,
+            "main_module": "worker.js",
+            "migrations": null,
+            "modified_on": "2025-05-09T20:42:33Z",
+            "observability": null,
+            "placement": null,
+            "script_name": "pull-request-1-worker",
+            "startup_time_ms": 0,
+            "tail_consumers": [],
+            "usage_model": "standard"
+          },
+          "sensitive_attributes": [],
+          "dependencies": [
+            "data.external.worker_script"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

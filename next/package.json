@@ -3,6 +3,10 @@
     "private": true,
     "scripts": {
         "init": "tsx utils/compressData.ts",
+        "scrape:azure": "cd ../scraper-go && AZURE_SUBSCRIPTION_ID=$(az account show --query id --output tsv) go run ./cmd/scrape-azure --output ../www/azure && cd ../next && npm run init",
+        "scrape:gcp": "cd ../scraper-go && export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json && GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null) go run ./cmd/scrape-gcp --output ../www/gcp && cd ../next && npm run init",
+        "scrape:oci": "cd ../scraper-go && go run ./cmd/scrape-oci --output ../www/oci && cd ../next && npm run init",
+        "scrape:all": "npm run scrape:azure && npm run scrape:gcp && npm run scrape:oci",
         "dev": "next dev --turbopack",
         "build:llms": "rimraf public/azure && rimraf public/aws && tsx llms/index.ts",
         "build:next": "next build",

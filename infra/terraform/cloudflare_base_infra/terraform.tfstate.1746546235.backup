@@ -1,0 +1,145 @@
+{
+  "version": 4,
+  "terraform_version": "1.9.5",
+  "serial": 38,
+  "lineage": "b0e71a3a-d7c9-d22a-8241-c43a2fc1c657",
+  "outputs": {
+    "bucket_name": {
+      "value": "cloud-instances-info",
+      "type": "string"
+    },
+    "cloudflare_name_servers": {
+      "value": [
+        "kelly.ns.cloudflare.com",
+        "rodney.ns.cloudflare.com"
+      ],
+      "type": [
+        "list",
+        "string"
+      ]
+    },
+    "website_url": {
+      "value": "https://cloud-instances.info",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "cloudflare_r2_bucket",
+      "name": "website_bucket",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "2ed2783fb9ef938c9f9149a58cab487f",
+            "id": "cloud-instances-info",
+            "location": "EEUR",
+            "name": "cloud-instances-info"
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "cloudflare_record",
+      "name": "r2_cdn",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 3,
+          "attributes": {
+            "allow_overwrite": false,
+            "comment": "",
+            "content": "cloud-instances-info.r2.cf",
+            "created_on": "2025-05-06T14:58:31.822788Z",
+            "data": [],
+            "hostname": "cloud-instances.info",
+            "id": "176ffe1f37659dbc4ebb8cf12b75e1eb",
+            "metadata": {},
+            "modified_on": "2025-05-06T14:58:31.822788Z",
+            "name": "@",
+            "priority": null,
+            "proxiable": true,
+            "proxied": true,
+            "tags": [],
+            "timeouts": null,
+            "ttl": 1,
+            "type": "CNAME",
+            "value": null,
+            "zone_id": "d3ce74f99acb03401e2aa8d5f8e4eb12"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMCwidXBkYXRlIjozMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMyJ9",
+          "dependencies": [
+            "cloudflare_r2_bucket.website_bucket",
+            "cloudflare_zone.domain_zone"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "cloudflare_zone",
+      "name": "domain_zone",
+      "provider": "provider[\"registry.terraform.io/cloudflare/cloudflare\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "2ed2783fb9ef938c9f9149a58cab487f",
+            "id": "d3ce74f99acb03401e2aa8d5f8e4eb12",
+            "jump_start": null,
+            "meta": {
+              "phishing_detected": false,
+              "wildcard_proxiable": false
+            },
+            "name_servers": [
+              "kelly.ns.cloudflare.com",
+              "rodney.ns.cloudflare.com"
+            ],
+            "paused": false,
+            "plan": "free",
+            "status": "pending",
+            "type": "full",
+            "vanity_name_servers": [],
+            "verification_key": "",
+            "zone": "cloud-instances.info"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "namecheap_domain_records",
+      "name": "domain_records",
+      "provider": "provider[\"registry.terraform.io/namecheap/namecheap\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "domain": "cloud-instances.info",
+            "email_type": null,
+            "id": "cloud-instances.info",
+            "mode": "OVERWRITE",
+            "nameservers": [
+              "kelly.ns.cloudflare.com",
+              "rodney.ns.cloudflare.com"
+            ],
+            "record": []
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "cloudflare_zone.domain_zone"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

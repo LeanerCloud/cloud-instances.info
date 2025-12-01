@@ -318,5 +318,325 @@
         }
       }
     }
+  },
+  {
+    "instance_type": "n2-standard-2",
+    "pretty_name": "N2 Standard 2",
+    "vcpu": 2,
+    "memory": 8,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "pricing": {
+      "europe-west1": {
+        "linux": {
+          "ondemand": 0.1058,
+          "preemptible": 0.02116,
+          "committed": {
+            "1yr": 0.067,
+            "3yr": 0.0477
+          }
+        },
+        "windows": {
+          "ondemand": 0.2116,
+          "committed": {
+            "1yr": 0.134,
+            "3yr": 0.0954
+          }
+        }
+      },
+      "us-central1": {
+        "linux": {
+          "ondemand": 0.0971,
+          "preemptible": 0.019420000000000003,
+          "committed": {
+            "1yr": 0.0615,
+            "3yr": 0.0438
+          }
+        },
+        "windows": {
+          "ondemand": 0.1942,
+          "committed": {
+            "1yr": 0.123,
+            "3yr": 0.0876
+          }
+        }
+      },
+      "us-east1": {
+        "linux": {
+          "ondemand": 0.0971,
+          "preemptible": 0.019420000000000003,
+          "committed": {
+            "1yr": 0.0615,
+            "3yr": 0.0438
+          }
+        },
+        "windows": {
+          "ondemand": 0.1942,
+          "committed": {
+            "1yr": 0.123,
+            "3yr": 0.0876
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "n2-standard-4",
+    "pretty_name": "N2 Standard 4",
+    "vcpu": 4,
+    "memory": 16,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "pricing": {
+      "europe-west1": {
+        "linux": {
+          "ondemand": 0.2116,
+          "preemptible": 0.04232,
+          "committed": {
+            "1yr": 0.134,
+            "3yr": 0.0954
+          }
+        },
+        "windows": {
+          "ondemand": 0.4232,
+          "committed": {
+            "1yr": 0.268,
+            "3yr": 0.1908
+          }
+        }
+      },
+      "us-central1": {
+        "linux": {
+          "ondemand": 0.1942,
+          "preemptible": 0.038840000000000006,
+          "committed": {
+            "1yr": 0.123,
+            "3yr": 0.0876
+          }
+        },
+        "windows": {
+          "ondemand": 0.3884,
+          "committed": {
+            "1yr": 0.246,
+            "3yr": 0.1752
+          }
+        }
+      },
+      "us-east1": {
+        "linux": {
+          "ondemand": 0.1942,
+          "preemptible": 0.038840000000000006,
+          "committed": {
+            "1yr": 0.123,
+            "3yr": 0.0876
+          }
+        },
+        "windows": {
+          "ondemand": 0.3884,
+          "committed": {
+            "1yr": 0.246,
+            "3yr": 0.1752
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "n2-standard-8",
+    "pretty_name": "N2 Standard 8",
+    "vcpu": 8,
+    "memory": 32,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "pricing": {
+      "europe-west1": {
+        "linux": {
+          "ondemand": 0.4232,
+          "preemptible": 0.08464,
+          "committed": {
+            "1yr": 0.268,
+            "3yr": 0.1908
+          }
+        },
+        "windows": {
+          "ondemand": 0.8464,
+          "committed": {
+            "1yr": 0.536,
+            "3yr": 0.3816
+          }
+        }
+      },
+      "us-central1": {
+        "linux": {
+          "ondemand": 0.3885,
+          "preemptible": 0.0777,
+          "committed": {
+            "1yr": 0.246,
+            "3yr": 0.1751
+          }
+        },
+        "windows": {
+          "ondemand": 0.777,
+          "committed": {
+            "1yr": 0.492,
+            "3yr": 0.3502
+          }
+        }
+      },
+      "us-east1": {
+        "linux": {
+          "ondemand": 0.3885,
+          "preemptible": 0.0777,
+          "committed": {
+            "1yr": 0.246,
+            "3yr": 0.1751
+          }
+        },
+        "windows": {
+          "ondemand": 0.777,
+          "committed": {
+            "1yr": 0.492,
+            "3yr": 0.3502
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "n2-highmem-2",
+    "pretty_name": "N2 High Memory 2",
+    "vcpu": 2,
+    "memory": 16,
+    "family": "Memory optimized",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "pricing": {
+      "europe-west1": {
+        "linux": {
+          "ondemand": 0.1426,
+          "preemptible": 0.028520000000000004,
+          "committed": {
+            "1yr": 0.0903,
+            "3yr": 0.0643
+          }
+        },
+        "windows": {
+          "ondemand": 0.2852,
+          "committed": {
+            "1yr": 0.1806,
+            "3yr": 0.1286
+          }
+        }
+      },
+      "us-central1": {
+        "linux": {
+          "ondemand": 0.1309,
+          "preemptible": 0.02618,
+          "committed": {
+            "1yr": 0.0829,
+            "3yr": 0.059
+          }
+        },
+        "windows": {
+          "ondemand": 0.2618,
+          "committed": {
+            "1yr": 0.1658,
+            "3yr": 0.118
+          }
+        }
+      },
+      "us-east1": {
+        "linux": {
+          "ondemand": 0.1309,
+          "preemptible": 0.02618,
+          "committed": {
+            "1yr": 0.0829,
+            "3yr": 0.059
+          }
+        },
+        "windows": {
+          "ondemand": 0.2618,
+          "committed": {
+            "1yr": 0.1658,
+            "3yr": 0.118
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "n2-highmem-4",
+    "pretty_name": "N2 High Memory 4",
+    "vcpu": 4,
+    "memory": 32,
+    "family": "Memory optimized",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "pricing": {
+      "europe-west1": {
+        "linux": {
+          "ondemand": 0.2853,
+          "preemptible": 0.05706,
+          "committed": {
+            "1yr": 0.1807,
+            "3yr": 0.1286
+          }
+        },
+        "windows": {
+          "ondemand": 0.5706,
+          "committed": {
+            "1yr": 0.3614,
+            "3yr": 0.2572
+          }
+        }
+      },
+      "us-central1": {
+        "linux": {
+          "ondemand": 0.2618,
+          "preemptible": 0.05236,
+          "committed": {
+            "1yr": 0.1658,
+            "3yr": 0.118
+          }
+        },
+        "windows": {
+          "ondemand": 0.5236,
+          "committed": {
+            "1yr": 0.3316,
+            "3yr": 0.236
+          }
+        }
+      },
+      "us-east1": {
+        "linux": {
+          "ondemand": 0.2618,
+          "preemptible": 0.05236,
+          "committed": {
+            "1yr": 0.1658,
+            "3yr": 0.118
+          }
+        },
+        "windows": {
+          "ondemand": 0.5236,
+          "committed": {
+            "1yr": 0.3316,
+            "3yr": 0.236
+          }
+        }
+      }
+    }
   }
 ]

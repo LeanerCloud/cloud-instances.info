@@ -1,0 +1,632 @@
+[
+  {
+    "instance_type": "VM.Standard2.1",
+    "pretty_name": "VM Standard2.1",
+    "vcpu": 1,
+    "memory": 15,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.051,
+          "reserved": {
+            "1yr": 0.0357,
+            "3yr": 0.0255
+          }
+        },
+        "windows": {
+          "ondemand": 0.0765,
+          "reserved": {
+            "1yr": 0.05355,
+            "3yr": 0.03825
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.0464,
+          "reserved": {
+            "1yr": 0.0325,
+            "3yr": 0.0232
+          }
+        },
+        "windows": {
+          "ondemand": 0.0696,
+          "reserved": {
+            "1yr": 0.04875,
+            "3yr": 0.0348
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.0464,
+          "reserved": {
+            "1yr": 0.0325,
+            "3yr": 0.0232
+          }
+        },
+        "windows": {
+          "ondemand": 0.0696,
+          "reserved": {
+            "1yr": 0.04875,
+            "3yr": 0.0348
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.Standard2.2",
+    "pretty_name": "VM Standard2.2",
+    "vcpu": 2,
+    "memory": 30,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.1021,
+          "reserved": {
+            "1yr": 0.0715,
+            "3yr": 0.0511
+          }
+        },
+        "windows": {
+          "ondemand": 0.15315,
+          "reserved": {
+            "1yr": 0.10724999999999998,
+            "3yr": 0.07665
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.0928,
+          "reserved": {
+            "1yr": 0.065,
+            "3yr": 0.0464
+          }
+        },
+        "windows": {
+          "ondemand": 0.1392,
+          "reserved": {
+            "1yr": 0.0975,
+            "3yr": 0.0696
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.0928,
+          "reserved": {
+            "1yr": 0.065,
+            "3yr": 0.0464
+          }
+        },
+        "windows": {
+          "ondemand": 0.1392,
+          "reserved": {
+            "1yr": 0.0975,
+            "3yr": 0.0696
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.Standard.E3.Flex",
+    "pretty_name": "VM Standard E3 Flex",
+    "vcpu": 1,
+    "memory": 16,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.0281,
+          "reserved": {
+            "1yr": 0.0197,
+            "3yr": 0.0141
+          }
+        },
+        "windows": {
+          "ondemand": 0.04215,
+          "reserved": {
+            "1yr": 0.02955,
+            "3yr": 0.02115
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.0255,
+          "reserved": {
+            "1yr": 0.0179,
+            "3yr": 0.0128
+          }
+        },
+        "windows": {
+          "ondemand": 0.03825,
+          "reserved": {
+            "1yr": 0.02685,
+            "3yr": 0.019200000000000002
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.0255,
+          "reserved": {
+            "1yr": 0.0179,
+            "3yr": 0.0128
+          }
+        },
+        "windows": {
+          "ondemand": 0.03825,
+          "reserved": {
+            "1yr": 0.02685,
+            "3yr": 0.019200000000000002
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "BM.Standard2.52",
+    "pretty_name": "BM Standard2.52",
+    "vcpu": 52,
+    "memory": 768,
+    "family": "Bare Metal",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "BM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 2.6541,
+          "reserved": {
+            "1yr": 1.8579,
+            "3yr": 1.327
+          }
+        },
+        "windows": {
+          "ondemand": 3.9811500000000004,
+          "reserved": {
+            "1yr": 2.7868500000000003,
+            "3yr": 1.9905
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 2.4128,
+          "reserved": {
+            "1yr": 1.689,
+            "3yr": 1.2064
+          }
+        },
+        "windows": {
+          "ondemand": 3.6191999999999998,
+          "reserved": {
+            "1yr": 2.5335,
+            "3yr": 1.8095999999999999
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 2.4128,
+          "reserved": {
+            "1yr": 1.689,
+            "3yr": 1.2064
+          }
+        },
+        "windows": {
+          "ondemand": 3.6191999999999998,
+          "reserved": {
+            "1yr": 2.5335,
+            "3yr": 1.8095999999999999
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.Standard.E4.Flex",
+    "pretty_name": "VM Standard E4 Flex",
+    "vcpu": 4,
+    "memory": 64,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.1122,
+          "reserved": {
+            "1yr": 0.0785,
+            "3yr": 0.0561
+          }
+        },
+        "windows": {
+          "ondemand": 0.1683,
+          "reserved": {
+            "1yr": 0.11775,
+            "3yr": 0.08415
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.102,
+          "reserved": {
+            "1yr": 0.0714,
+            "3yr": 0.051
+          }
+        },
+        "windows": {
+          "ondemand": 0.153,
+          "reserved": {
+            "1yr": 0.1071,
+            "3yr": 0.0765
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.102,
+          "reserved": {
+            "1yr": 0.0714,
+            "3yr": 0.051
+          }
+        },
+        "windows": {
+          "ondemand": 0.153,
+          "reserved": {
+            "1yr": 0.1071,
+            "3yr": 0.0765
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.Standard3.Flex",
+    "pretty_name": "VM Standard3 Flex",
+    "vcpu": 4,
+    "memory": 64,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.0748,
+          "reserved": {
+            "1yr": 0.0524,
+            "3yr": 0.0374
+          }
+        },
+        "windows": {
+          "ondemand": 0.11220000000000001,
+          "reserved": {
+            "1yr": 0.0786,
+            "3yr": 0.056100000000000004
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.068,
+          "reserved": {
+            "1yr": 0.0476,
+            "3yr": 0.034
+          }
+        },
+        "windows": {
+          "ondemand": 0.10200000000000001,
+          "reserved": {
+            "1yr": 0.0714,
+            "3yr": 0.051000000000000004
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.068,
+          "reserved": {
+            "1yr": 0.0476,
+            "3yr": 0.034
+          }
+        },
+        "windows": {
+          "ondemand": 0.10200000000000001,
+          "reserved": {
+            "1yr": 0.0714,
+            "3yr": 0.051000000000000004
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.Standard.A1.Flex",
+    "pretty_name": "VM Standard A1 Flex (Ampere)",
+    "vcpu": 4,
+    "memory": 24,
+    "family": "General purpose",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.022,
+          "reserved": {
+            "1yr": 0.0154,
+            "3yr": 0.011
+          }
+        },
+        "windows": {
+          "ondemand": 0.033,
+          "reserved": {
+            "1yr": 0.023100000000000002,
+            "3yr": 0.0165
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.02,
+          "reserved": {
+            "1yr": 0.014,
+            "3yr": 0.01
+          }
+        },
+        "windows": {
+          "ondemand": 0.03,
+          "reserved": {
+            "1yr": 0.021,
+            "3yr": 0.015
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.02,
+          "reserved": {
+            "1yr": 0.014,
+            "3yr": 0.01
+          }
+        },
+        "windows": {
+          "ondemand": 0.03,
+          "reserved": {
+            "1yr": 0.021,
+            "3yr": 0.015
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "BM.Standard3.64",
+    "pretty_name": "BM Standard3.64",
+    "vcpu": 64,
+    "memory": 1024,
+    "family": "Bare metal",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "BM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 4.7872,
+          "reserved": {
+            "1yr": 3.351,
+            "3yr": 2.3936
+          }
+        },
+        "windows": {
+          "ondemand": 7.1808000000000005,
+          "reserved": {
+            "1yr": 5.0265,
+            "3yr": 3.5904000000000003
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 4.352,
+          "reserved": {
+            "1yr": 3.0464,
+            "3yr": 2.176
+          }
+        },
+        "windows": {
+          "ondemand": 6.5280000000000005,
+          "reserved": {
+            "1yr": 4.5696,
+            "3yr": 3.2640000000000002
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 4.352,
+          "reserved": {
+            "1yr": 3.0464,
+            "3yr": 2.176
+          }
+        },
+        "windows": {
+          "ondemand": 6.5280000000000005,
+          "reserved": {
+            "1yr": 4.5696,
+            "3yr": 3.2640000000000002
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.DenseIO2.8",
+    "pretty_name": "VM DenseIO2.8",
+    "vcpu": 8,
+    "memory": 120,
+    "family": "Dense I/O",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 0.6732,
+          "reserved": {
+            "1yr": 0.4712,
+            "3yr": 0.3366
+          }
+        },
+        "windows": {
+          "ondemand": 1.0098,
+          "reserved": {
+            "1yr": 0.7068,
+            "3yr": 0.5049
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 0.612,
+          "reserved": {
+            "1yr": 0.4284,
+            "3yr": 0.306
+          }
+        },
+        "windows": {
+          "ondemand": 0.9179999999999999,
+          "reserved": {
+            "1yr": 0.6426000000000001,
+            "3yr": 0.45899999999999996
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 0.612,
+          "reserved": {
+            "1yr": 0.4284,
+            "3yr": 0.306
+          }
+        },
+        "windows": {
+          "ondemand": 0.9179999999999999,
+          "reserved": {
+            "1yr": 0.6426000000000001,
+            "3yr": 0.45899999999999996
+          }
+        }
+      }
+    }
+  },
+  {
+    "instance_type": "VM.GPU3.1",
+    "pretty_name": "VM GPU3.1 (V100)",
+    "vcpu": 6,
+    "memory": 90,
+    "family": "GPU",
+    "arch": [
+      "x64"
+    ],
+    "network_performance": "",
+    "shape_type": "VM.Standard",
+    "processor": "Intel Xeon",
+    "pricing": {
+      "eu-frankfurt-1": {
+        "linux": {
+          "ondemand": 3.245,
+          "reserved": {
+            "1yr": 2.2715,
+            "3yr": 1.6225
+          }
+        },
+        "windows": {
+          "ondemand": 4.8675,
+          "reserved": {
+            "1yr": 3.4072500000000003,
+            "3yr": 2.43375
+          }
+        }
+      },
+      "us-ashburn-1": {
+        "linux": {
+          "ondemand": 2.95,
+          "reserved": {
+            "1yr": 2.065,
+            "3yr": 1.475
+          }
+        },
+        "windows": {
+          "ondemand": 4.425000000000001,
+          "reserved": {
+            "1yr": 3.0975,
+            "3yr": 2.2125000000000004
+          }
+        }
+      },
+      "us-phoenix-1": {
+        "linux": {
+          "ondemand": 2.95,
+          "reserved": {
+            "1yr": 2.065,
+            "3yr": 1.475
+          }
+        },
+        "windows": {
+          "ondemand": 4.425000000000001,
+          "reserved": {
+            "1yr": 3.0975,
+            "3yr": 2.2125000000000004
+          }
+        }
+      }
+    }
+  }
+]

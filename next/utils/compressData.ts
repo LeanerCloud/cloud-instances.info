@@ -90,9 +90,10 @@ async function compressAzureInstances() {
     const instances = JSON.parse(
         await readFile("../www/azure/instances.json", "utf8"),
     );
-    for (const instance of instances) {
-        formatAzureInstanceType(instance);
-    }
+    // Don't format instance types - they're already formatted correctly
+    // for (const instance of instances) {
+    //     formatAzureInstanceType(instance);
+    // }
 
     // Encode and then compress the Azure instances.
     await writeFile(
@@ -208,10 +209,140 @@ async function compressRDSInstances() {
     console.log("RDS instances data compressed and saved");
 }
 
+async function compressGCPInstances() {
+    const instances = JSON.parse(
+        await readFile("../www/gcp/instances.json", "utf8"),
+    );
+    
+    // Encode and then compress the GCP instances.
+    await writeFile(
+        "./public/gcp-instance-count.txt",
+        instances.length.toString(),
+    );
+    await writeFile(
+        "./public/gcp-instance-ids.json",
+        JSON.stringify(
+            instances.map((i: { instance_type: string }) => i.instance_type),
+        ),
+    );
+    await writeFile(
+        "./public/gcp-instances-hash.txt",
+        hashInstances(instances),
+    );
+    const first100Instances = instances.slice(0, 100);
+    const first100InstancesEncoded = encode(
+        makeRainbowTable(first100Instances),
+    );
+    const remainingInstances = instances.slice(100);
+    await writeFile(
+        "./public/first-100-gcp-instances.msgpack",
+        first100InstancesEncoded,
+    );
+    const itemsPerPipeline = Math.ceil(
+        remainingInstances.length / PIPELINE_SIZE,
+    );
+    const remainingPipelineLength =
+        remainingInstances.length % itemsPerPipeline;
+
+    console.log("Compressing GCP instances data...");
+    for (let i = 0; i < PIPELINE_SIZE; i++) {
+        let chunk = remainingInstances.slice(
+            i * itemsPerPipeline,
+            (i + 1) * itemsPerPipeline,
+        );
+        if (i === PIPELINE_SIZE - 1 && remainingPipelineLength > 0) {
+            chunk = chunk.concat(
+                remainingInstances.slice(
+                    (i + 1) * itemsPerPipeline,
+                    remainingInstances.length,
+                ),
+            );
+        }
+        const chunkEncoded = encode(makeRainbowTable(chunk));
+        const compressedChunk: Buffer = await new Promise((res) => {
+            compress(Buffer.from(chunkEncoded), {}, (result) => {
+                res(result);
+            });
+        });
+        await writeFile(
+            `./public/remaining-gcp-instances-p${i}.msgpack.xz`,
+            compressedChunk,
+        );
+    }
+
+    console.log("GCP instances data compressed and saved");
+}
+
+async function compressOCIInstances() {
+    const instances = JSON.parse(
+        await readFile("../www/oci/instances.json", "utf8"),
+    );
+    
+    // Encode and then compress the OCI instances.
+    await writeFile(
+        "./public/oci-instance-count.txt",
+        instances.length.toString(),
+    );
+    await writeFile(
+        "./public/oci-instance-ids.json",
+        JSON.stringify(
+            instances.map((i: { instance_type: string }) => i.instance_type),
+        ),
+    );
+    await writeFile(
+        "./public/oci-instances-hash.txt",
+        hashInstances(instances),
+    );
+    const first100Instances = instances.slice(0, 100);
+    const first100InstancesEncoded = encode(
+        makeRainbowTable(first100Instances),
+    );
+    const remainingInstances = instances.slice(100);
+    await writeFile(
+        "./public/first-100-oci-instances.msgpack",
+        first100InstancesEncoded,
+    );
+    const itemsPerPipeline = Math.ceil(
+        remainingInstances.length / PIPELINE_SIZE,
+    );
+    const remainingPipelineLength =
+        remainingInstances.length % itemsPerPipeline;
+
+    console.log("Compressing OCI instances data...");
+    for (let i = 0; i < PIPELINE_SIZE; i++) {
+        let chunk = remainingInstances.slice(
+            i * itemsPerPipeline,
+            (i + 1) * itemsPerPipeline,
+        );
+        if (i === PIPELINE_SIZE - 1 && remainingPipelineLength > 0) {
+            chunk = chunk.concat(
+                remainingInstances.slice(
+                    (i + 1) * itemsPerPipeline,
+                    remainingInstances.length,
+                ),
+            );
+        }
+        const chunkEncoded = encode(makeRainbowTable(chunk));
+        const compressedChunk: Buffer = await new Promise((res) => {
+            compress(Buffer.from(chunkEncoded), {}, (result) => {
+                res(result);
+            });
+        });
+        await writeFile(
+            `./public/remaining-oci-instances-p${i}.msgpack.xz`,
+            compressedChunk,
+        );
+    }
+
+    console.log("OCI instances data compressed and saved");
+}
+
 async function main() {
     await compressEC2Instances();
     await compressAzureInstances();
     await compressRDSInstances();
+    await compressGCPInstances();
+    await compressOCIInstances();
 }
 
 main();

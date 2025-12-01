@@ -1,7 +1,7 @@
 package azure
 
-// VantageAzureInstance represents the structure from instances.vantage.sh/azure/instances.json
-type VantageAzureInstance struct {
+// AzureInstance represents the structure for Azure instances
+type AzureInstance struct {
 	ACU                  int                               `json:"ACU"`
 	GPU                  string                            `json:"GPU"`
 	AcceleratedNetworking bool                             `json:"accelerated_networking"`
@@ -23,7 +23,7 @@ type VantageAzureInstance struct {
 	PremiumIO            bool                              `json:"premium_io"`
 	PrettyName           string                            `json:"pretty_name"`
 	PrettyNameAzure      string                            `json:"pretty_name_azure"`
-	Pricing              map[string]VantageAzurePricing    `json:"pricing"`
+	Pricing              map[string]AzurePricing    `json:"pricing"`
 	RDMA                 bool                              `json:"rdma,omitempty"`
 	ReadIO               interface{}                       `json:"read_io"`
 	Size                 interface{}                       `json:"size"`
@@ -39,14 +39,14 @@ type VantageAzureInstance struct {
 	WriteIO              interface{}                       `json:"write_io"`
 }
 
-// VantageAzurePricing represents pricing structure
-type VantageAzurePricing struct {
-	Linux   VantageAzureOSPricing `json:"linux,omitempty"`
-	Windows VantageAzureOSPricing `json:"windows,omitempty"`
+// AzurePricing represents pricing structure
+type AzurePricing struct {
+	Linux   AzureOSPricing `json:"linux,omitempty"`
+	Windows AzureOSPricing `json:"windows,omitempty"`
 }
 
-// VantageAzureOSPricing represents OS-specific pricing
-type VantageAzureOSPricing struct {
+// AzureOSPricing represents OS-specific pricing
+type AzureOSPricing struct {
 	Basic          float64            `json:"basic,omitempty"`
 	BasicSpot      float64            `json:"basic-spot,omitempty"`
 	OnDemand       float64            `json:"ondemand,omitempty"`

@@ -1,9 +1,11 @@
 import { Metadata } from "next";
 import { OCIClient } from "./OCIClient";
-import { readdir, readFile } from "fs/promises";
-import { join } from "path";
+import { readFile } from "fs/promises";
+import Head from "next/head";
+import { PIPELINE_SIZE } from "@/utils/handleCompressedFile";
 import * as YAML from "js-yaml";
 import { decode } from "@msgpack/msgpack";
+import { OCIInstance } from "@/utils/colunnData/oci";
 
 export const metadata: Metadata = {
   title: "OCI Compute Instance Comparison",
@@ -13,46 +15,39 @@ export const metadata: Metadata = {
 
 export default async function OCIPage() {
   // Load regions data
-  const regionsFile = await readFile(
-    join(process.cwd(), "data/oci-regions.yaml"),
-    "utf8"
-  );
+  const regionsFile = await readFile("./public/data/oci-regions.yaml", "utf8");
   const regions = YAML.load(regionsFile);
 
-  // Load instances data (will be generated from our Go scraper)
-  let instances: any[] = [];
-  let instanceCount = 0;
-  
-  try {
-    const instancesFile = await readFile(
-      join(process.cwd(), "data/oci-instances.json"),
-      "utf8"
-    );
-    instances = JSON.parse(instancesFile);
-    instanceCount = instances.length;
-  } catch (error) {
-    console.warn("OCI instances data not found, using empty dataset");
-  }
+  const data = await readFile("./public/first-100-oci-instances.msgpack");
+  const compressedInstances = decode(data) as [string[], ...OCIInstance[]];
+
+  const instanceCount = Number(
+    await readFile("./public/oci-instance-count.txt"),
+  );
+  const instancesHash = await readFile(
+    "./public/oci-instances-hash.txt",
+    "utf-8",
+  );
 
   return (
     <>
-      <link
-        rel="preload"
-        href="/data/oci-instances.msgpack.xz"
-        as="fetch"
-        crossOrigin="anonymous"
-      />
-      <link
-        rel="preload"
-        href="/data/oci-regions.yaml"
-        as="fetch"
-        crossOrigin="anonymous"
-      />
+      <Head>
+        {Array.from({ length: PIPELINE_SIZE }).map((_, i) => (
+          <link
+            key={i}
+            rel="preload"
+            href={`/remaining-oci-instances-p${i}.msgpack.xz?cache=${instancesHash}`}
+            as="fetch"
+            fetchPriority="high"
+          />
+        ))}
+      </Head>
       <OCIClient
         columnAtomKey="oci"
         regions={regions}
-        instances={instances}
         instanceCount={instanceCount}
+        compressedDataPathTemplate={`/remaining-oci-instances-p{}.msgpack.xz?cache=${instancesHash}`}
+        compressedInstances={compressedInstances}
       />
     </>
   );

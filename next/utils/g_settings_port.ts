@@ -23,6 +23,17 @@ export const g_settings_azure_default = {
     reserved_term: "yrTerm1Standard.allUpfront",
 };
 
+export const g_settings_gcp_default = {
+    ...g_settings_aws_default,
+    region: "us-central1",
+    reserved_term: "1yr",
+};
+
+export const g_settings_oci_default = {
+    ...g_settings_aws_default,
+    region: "us-ashburn-1",
+};
+
 type GSettingsDefault = typeof g_settings_aws_default;
 type GSettingsKey = keyof GSettingsDefault;
 
@@ -121,15 +132,42 @@ export default class GSettings {
     key: string;
     filterData = "";
     filterPreCompareOn = "";
+    private cloudProvider: "aws" | "azure" | "gcp" | "oci";
 
     constructor(
-        private azure: boolean,
+        private isNonAWS: boolean,
         private notRoot: boolean,
     ) {
-        this.key = this.azure ? "azure_settings" : "aws_settings";
-        this.settings = this.azure
-            ? { ...g_settings_azure_default }
-            : { ...g_settings_aws_default };
+        // Determine cloud provider from URL
+        const path = window.location.pathname;
+        if (path.includes("azure")) {
+            this.cloudProvider = "azure";
+        } else if (path.includes("gcp")) {
+            this.cloudProvider = "gcp";
+        } else if (path.includes("oci")) {
+            this.cloudProvider = "oci";
+        } else {
+            this.cloudProvider = "aws";
+        }
+
+        // Set key based on cloud provider
+        this.key = `${this.cloudProvider}_settings`;
+
+        // Set defaults based on cloud provider
+        switch (this.cloudProvider) {
+            case "azure":
+                this.settings = { ...g_settings_azure_default };
+                break;
+            case "gcp":
+                this.settings = { ...g_settings_gcp_default };
+                break;
+            case "oci":
+                this.settings = { ...g_settings_oci_default };
+                break;
+            default:
+                this.settings = { ...g_settings_aws_default };
+        }
+
         const stored = localStorage.getItem(this.key);
         if (stored) {
             try {
@@ -160,7 +198,7 @@ export default class GSettings {
         validate(params, this.settings, "reserved_term");
         validate(params, this.settings, "compare_on", validateBoolean);
 
-        if (this.azure) {
+        if (this.cloudProvider === "azure") {
             // Migration for the old savings plan term.
             const savingsPlanTerm = params.get("savings_plan_term");
             if (savingsPlanTerm) {

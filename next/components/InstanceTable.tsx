@@ -298,7 +298,7 @@ export default function InstanceTable<
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
                                     <th key={header.id}>
-                                        <div className="relative overflow-hidden border-y border-r border-gray-5 bg-gray-6">
+                                        <div className="relative overflow-hidden border-y border-r border-gray-5 bg-gray-6" suppressHydrationWarning>
                                             <span
                                                 className="block w-full h-[70px] px-2 pt-1 pr-5 cursor-pointer select-none overflow-hidden whitespace-nowrap text-ellipsis text-left flex-1 hover:bg-gray-5"
                                                 onClick={() =>

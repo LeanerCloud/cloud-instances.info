@@ -11,15 +11,20 @@ import { CostDuration } from "@/types";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
 import exprCompiler from "@/utils/expr";
 
+export interface AzureOSPricing {
+    ondemand: number;
+    lowpriority?: number;
+    hybridbenefit?: number;
+    spot_min?: number;
+    reserved: {
+        [key: string]: number;
+    };
+}
+
 export interface AzurePricing {
     [region: string]: {
-        [platform: string]: {
-            ondemand: number;
-            reserved: {
-                [key: string]: number;
-            };
-            spot_min?: number;
-        };
+        linux: AzureOSPricing;
+        windows: AzureOSPricing;
     };
 }
 
@@ -194,7 +199,7 @@ function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
-    getter: (pricing: AzurePricing[string] | undefined) => number | undefined,
+    getter: (pricing: { linux: AzureOSPricing; windows: AzureOSPricing } | undefined) => number | undefined,
 ) {
     return {
         sortingFn: (rowA, rowB) => {

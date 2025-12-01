@@ -14,7 +14,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 <link rel="icon" href="/favicon.png" />
                 <link
@@ -29,7 +29,7 @@ export default function RootLayout({
                     strategy="afterInteractive"
                 />
             </head>
-            <body className={inter.className}>
+            <body className={inter.className} suppressHydrationWarning>
                 <TopNav />
                 <Toaster duration={2000} />
                 {children}
