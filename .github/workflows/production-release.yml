@@ -2,6 +2,7 @@ name: Production Release
 concurrency: production-release
 on:
     schedule:
+        # Run every 8 hours to keep pricing data fresh
         - cron: "0 */8 * * *"
     push:
         branches:
@@ -14,31 +15,44 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - run: make all
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: 1.24.4
+
+            - name: Build site with scrapers
+              run: make all
               env:
+                  # AWS credentials for EC2/RDS/ElastiCache/OpenSearch/Redshift pricing
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  # Azure credentials for VM pricing (service principal)
                   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
                   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
                   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
                   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                  # GCP API key for Compute Engine pricing (fork scraper)
+                  GCP_API_KEY: ${{ secrets.GCP_API_KEY }}
+                  # GCP service account for Compute Engine pricing (upstream scraper)
+                  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+                  GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
+                  GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
+                  # Next.js configuration
                   NEXT_PUBLIC_URL: https://${{ secrets.PRODUCTION_HOSTNAME }}/
+                  # Error monitoring
                   NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
                   SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
                   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
                   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  # Analytics
                   NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
-                  NEXT_PUBLIC_ENABLE_VANTAGE_SCRIPT_TAG: "1"
-                  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-                  GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
-                  GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
+                  # Scraper notifications (optional)
                   SLACK_WEBHOOK_URL: ${{ secrets.SCRAPER_SLACK_WEBHOOK_URL }}
 
-            - name: Deploy to the production bucket
+            - name: Deploy to production bucket
               run: cd deployment && npm ci && npm run start
               env:
                   DEPLOYMENT_CF_BUCKET: ${{ secrets.PRODUCTION_CF_BUCKET }}
-                  DEPLOYMENT_CF_ACCOUNT_ID: ${{ secrets.DEPLOYMENT_CF_ACCOUNT_ID }}
+                  DEPLOYMENT_CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   DEPLOYMENT_CF_AWS_ACCESS_KEY_ID: ${{ secrets.PRODUCTION_CF_AWS_ACCESS_KEY_ID }}
                   DEPLOYMENT_CF_AWS_SECRET_ACCESS_KEY: ${{ secrets.PRODUCTION_CF_AWS_SECRET_ACCESS_KEY }}
                   DEPLOYMENT_CF_API_KEY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -47,10 +61,10 @@ jobs:
             - uses: cloudflare/wrangler-action@v3
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-                  accountId: ${{ secrets.DEPLOYMENT_CF_ACCOUNT_ID }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   wranglerVersion: "4.15.0"
 
-            - name: Clear cloudflare cache
+            - name: Clear Cloudflare cache
               run: |
                   curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.PRODUCTION_CF_ZONE_ID }}/purge_cache" \
                   -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
@@ -58,21 +72,21 @@ jobs:
                   --data '{"hosts":["${{ secrets.PRODUCTION_HOSTNAME }}"]}'
 
             - name: Success Slack Notify
-              if: ${{ success() }}
+              if: success()
               uses: slackapi/slack-github-action@v1.16.0
+              continue-on-error: true
               with:
-                  payload: '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":":rocket: **${{ env.SERVICE }}** deployed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]}'
+                  payload: '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":":rocket: *${{ secrets.PRODUCTION_HOSTNAME }}* deployed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]}'
               env:
                   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
                   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-                  SERVICE: ec2instances-production
 
             - name: Failure Slack Notify
-              if: ${{ failure() }}
+              if: failure()
               uses: slackapi/slack-github-action@v1.16.0
+              continue-on-error: true
               with:
-                  payload: '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":":see_no_evil: **${{ env.SERVICE }}** wasn''t deployed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]}'
+                  payload: '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":":x: *${{ secrets.PRODUCTION_HOSTNAME }}* deployment failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]}'
               env:
                   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
                   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-                  SERVICE: ec2instances-production
