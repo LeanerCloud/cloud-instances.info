@@ -16,3 +16,11 @@ result
 .wrangler
 deployment/node_modules
 node_modules
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+crash.*.log
