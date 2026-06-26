@@ -45,6 +45,8 @@ jobs:
                   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
                   # Analytics
                   NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
+                  NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+                  NEXT_PUBLIC_UMAMI_SCRIPT_URL: ${{ secrets.UMAMI_SCRIPT_URL }}
                   # Scraper notifications (optional)
                   SLACK_WEBHOOK_URL: ${{ secrets.SCRAPER_SLACK_WEBHOOK_URL }}
 
