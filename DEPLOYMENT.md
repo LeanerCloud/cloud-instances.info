@@ -52,11 +52,12 @@ master = validated commit ─► build + deploy production ─► cloud-instance
 
 ### Cloudflare resources
 
-Create in this fork's Cloudflare account, then fill the IDs into `wrangler.jsonc` and the secrets below:
+Apply the `infra/terraform/cloudflare_worker_assets` module to create the R2 buckets and KV
+namespaces (see its README), then wire the results into `wrangler.jsonc` and the secrets below:
 
 - R2 buckets: `cloud-instances-assets-production`, `cloud-instances-assets-staging`.
-- KV namespaces (one per environment) — paste their ids into `wrangler.jsonc`
-  (`REPLACE_WITH_PRODUCTION_KV_ID`, `REPLACE_WITH_STAGING_KV_ID`).
+- KV namespaces — run `terraform output kv_namespace_ids` and paste each id into `wrangler.jsonc`
+  (replacing `REPLACE_WITH_PRODUCTION_KV_ID`, `REPLACE_WITH_STAGING_KV_ID`).
 
 ### GitHub
 
