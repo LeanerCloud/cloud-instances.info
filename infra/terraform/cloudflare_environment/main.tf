@@ -13,9 +13,8 @@ locals {
   worker_script_content = base64decode(data.external.worker_script.result.content)
 }
 
-# Create Cloudflare R2 bucket with version 5.1.0 provider
+# Create Cloudflare R2 bucket
 resource "cloudflare_r2_bucket" "website_bucket" {
-  provider      = cloudflare.v5_1_0 # Use the aliased provider
   account_id    = var.cloudflare_account_id
   name          = var.bucket_name
   location      = var.bucket_location
