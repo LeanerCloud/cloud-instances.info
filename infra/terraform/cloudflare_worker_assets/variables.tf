@@ -17,3 +17,12 @@ variable "bucket_location" {
   type        = string
   default     = null
 }
+
+variable "kv_namespace_titles" {
+  description = "Workers KV namespace titles to create (one per environment). The resulting ids (see outputs) go into wrangler.jsonc."
+  type        = set(string)
+  default = [
+    "cloud-instances-assets-production",
+    "cloud-instances-assets-staging",
+  ]
+}
