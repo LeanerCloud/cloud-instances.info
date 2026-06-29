@@ -1,0 +1,140 @@
+# Every 8 hours (or on manual dispatch): rebase the human-owned `development`
+# branch onto the latest Vantage upstream, deploy it to staging, and on success
+# promote the validated commit to `master` and deploy production.
+#
+# Deploys ALWAYS run (even with no code change) because each build re-scrapes
+# fresh pricing data. On a rebase conflict the pipeline stops, opens/updates a
+# GitHub issue, and alerts Slack - nothing is deployed until a human updates
+# `development`.
+#
+# NOTE: scheduled runs only fire when this workflow exists on the default branch
+# (`master`).
+name: Auto-rebase and deploy
+concurrency: auto-rebase-deploy
+on:
+    schedule:
+        - cron: "0 */8 * * *"
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    issues: write
+
+jobs:
+    rebase:
+        name: Rebase development onto upstream
+        runs-on: ubuntu-22.04-arm
+        outputs:
+            sha: ${{ steps.rebase.outputs.sha }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: development
+                  fetch-depth: 0
+
+            - name: Configure git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Rebase onto upstream/main
+              id: rebase
+              run: |
+                  git remote add upstream https://github.com/vantage-sh/ec2instances.info.git
+                  git fetch upstream main
+                  git checkout -B staging-auto origin/development
+                  if git rebase upstream/main; then
+                      git push --force origin staging-auto
+                      echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+                  else
+                      CONFLICTS="$(git diff --name-only --diff-filter=U | tr '\n' ' ')"
+                      git rebase --abort || true
+                      echo "conflicts=$CONFLICTS" >> "$GITHUB_OUTPUT"
+                      echo "::error::Rebase conflict on: $CONFLICTS"
+                      exit 1
+                  fi
+
+            - name: Open/update conflict issue
+              if: failure() && steps.rebase.outputs.conflicts != ''
+              uses: actions/github-script@v7
+              env:
+                  CONFLICTS: ${{ steps.rebase.outputs.conflicts }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              with:
+                  script: |
+                      const label = 'upstream-rebase-conflict';
+                      const conflicts = process.env.CONFLICTS.trim();
+                      const body = [
+                          'Automated rebase of `development` onto `upstream/main` hit conflicts and was aborted.',
+                          '',
+                          '**Conflicting files:**',
+                          ...conflicts.split(/\s+/).filter(Boolean).map((f) => `- \`${f}\``),
+                          '',
+                          'Staging/production were NOT deployed. Resolve by rebasing `development` locally and pushing, then re-run the workflow.',
+                          '',
+                          `Workflow run: ${process.env.RUN_URL}`,
+                      ].join('\n');
+                      const { owner, repo } = context.repo;
+                      const existing = await github.rest.issues.listForRepo({
+                          owner, repo, state: 'open', labels: label,
+                      });
+                      if (existing.data.length > 0) {
+                          await github.rest.issues.createComment({
+                              owner, repo, issue_number: existing.data[0].number, body,
+                          });
+                      } else {
+                          await github.rest.issues.create({
+                              owner, repo,
+                              title: 'Upstream rebase conflict blocking auto-deploy',
+                              body,
+                              labels: [label],
+                          });
+                      }
+
+            - name: Slack conflict alert
+              if: failure() && steps.rebase.outputs.conflicts != ''
+              uses: slackapi/slack-github-action@v1.16.0
+              continue-on-error: true
+              with:
+                  payload: '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":":warning: Upstream rebase conflict - staging/prod auto-deploy halted. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}]}'
+              env:
+                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+                  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+    deploy-staging:
+        needs: rebase
+        uses: ./.github/workflows/deploy.yml
+        with:
+            environment: staging
+            hostname: staging-cloud-instances.uk
+            deny_robots: true
+            ref: ${{ needs.rebase.outputs.sha }}
+        secrets: inherit
+
+    promote:
+        name: Promote validated commit to master
+        needs: [rebase, deploy-staging]
+        runs-on: ubuntu-22.04-arm
+        steps:
+            - name: Advance master to the validated staging commit
+              uses: actions/github-script@v7
+              env:
+                  SHA: ${{ needs.rebase.outputs.sha }}
+              with:
+                  script: |
+                      await github.rest.git.updateRef({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          ref: 'heads/master',
+                          sha: process.env.SHA,
+                          force: true,
+                      });
+
+    deploy-production:
+        needs: [rebase, promote]
+        uses: ./.github/workflows/deploy.yml
+        with:
+            environment: production
+            hostname: cloud-instances.info
+            ref: ${{ needs.rebase.outputs.sha }}
+        secrets: inherit
