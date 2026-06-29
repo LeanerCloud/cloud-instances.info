@@ -13,7 +13,7 @@
     "kv_namespaces": [
         {
             "binding": "ASSETS_KV",
-            "id": "REPLACE_WITH_PRODUCTION_KV_ID",
+            "id": "a461ea5343054b13af96d12af4a1972a",
         },
     ],
     "env": {
@@ -28,7 +28,7 @@
             "kv_namespaces": [
                 {
                     "binding": "ASSETS_KV",
-                    "id": "REPLACE_WITH_STAGING_KV_ID",
+                    "id": "11ab2e7c19f2474cbad30bacebacc71a",
                 },
             ],
             "routes": [
