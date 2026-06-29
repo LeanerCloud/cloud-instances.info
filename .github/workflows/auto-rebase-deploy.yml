@@ -15,6 +15,11 @@ on:
     schedule:
         - cron: "0 */8 * * *"
     workflow_dispatch:
+        inputs:
+            deploy_production:
+                description: "Also promote to master + deploy production (scheduled runs always do this)"
+                type: boolean
+                default: false
 
 permissions:
     contents: write
@@ -114,6 +119,7 @@ jobs:
     promote:
         name: Promote validated commit to master
         needs: [rebase, deploy-staging]
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_production }}
         runs-on: ubuntu-22.04-arm
         steps:
             - name: Advance master to the validated staging commit
@@ -132,6 +138,7 @@ jobs:
 
     deploy-production:
         needs: [rebase, promote]
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_production }}
         uses: ./.github/workflows/deploy.yml
         with:
             environment: production
