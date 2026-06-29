@@ -1,48 +1,47 @@
 {
-    "name": "ec2instances-worker",
+    "name": "cloud-instances-worker",
     "compatibility_date": "2025-05-12",
     "main": "worker.js",
+    // Production R2 bucket + KV namespace (this fork's Cloudflare account).
+    // Create these in Cloudflare and fill in the KV namespace id below.
     "r2_buckets": [
         {
-            "bucket_name": "ec2instances-assets-production",
+            "bucket_name": "cloud-instances-assets-production",
             "binding": "ASSETS_BUCKET",
         },
     ],
     "kv_namespaces": [
         {
             "binding": "ASSETS_KV",
-            "id": "33b0605d8d1e48bc9d92b2a3a2170f73",
+            "id": "REPLACE_WITH_PRODUCTION_KV_ID",
         },
     ],
     "env": {
         "staging": {
-            "name": "ec2instances-worker-staging",
+            "name": "cloud-instances-worker-staging",
             "r2_buckets": [
                 {
-                    "bucket_name": "ec2instances-assets-staging",
+                    "bucket_name": "cloud-instances-assets-staging",
                     "binding": "ASSETS_BUCKET",
                 },
             ],
             "kv_namespaces": [
                 {
                     "binding": "ASSETS_KV",
-                    "id": "21c077fc724842bd95a0df80f84a3484",
+                    "id": "REPLACE_WITH_STAGING_KV_ID",
                 },
             ],
-            "routes": [],
+            "routes": [
+                {
+                    "pattern": "staging-cloud-instances.uk",
+                    "custom_domain": true,
+                },
+            ],
         },
         "production": {
             "routes": [
                 {
-                    "pattern": "instances.vantage.sh",
-                    "custom_domain": true,
-                },
-                {
-                    "pattern": "ec2instances.info",
-                    "custom_domain": true,
-                },
-                {
-                    "pattern": "www.ec2instances.info",
+                    "pattern": "cloud-instances.info",
                     "custom_domain": true,
                 },
             ],
