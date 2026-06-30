@@ -43,8 +43,17 @@ jobs:
         runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v4
-            - name: un-tar the staging www at the root of the repo
-              run: curl -L https://instances.vantagestaging.sh/www_pre_build.tar.gz | tar -xzf -
+            - name: Fetch pre-built www data for tests
+              # Download to a file (don't pipe into tar), then extract ONLY the
+              # www/ member with --no-same-owner. Limiting extraction to www/
+              # means a compromised artifact can't drop files elsewhere in the
+              # workspace (e.g. a malicious package.json/postinstall the next
+              # npm ci would run). SHA-pinning isn't possible here: the tarball
+              # is rebuilt with fresh pricing on every deploy.
+              run: |
+                  curl -fsSL -o www_pre_build.tar.gz https://instances.vantagestaging.sh/www_pre_build.tar.gz
+                  tar -xzf www_pre_build.tar.gz --no-same-owner www
+                  rm -f www_pre_build.tar.gz
             - uses: actions/setup-node@v4
               with:
                   node-version-file: next/.nvmrc
