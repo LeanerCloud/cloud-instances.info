@@ -59,6 +59,8 @@ jobs:
                   GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
                   # Next.js configuration
                   NEXT_PUBLIC_URL: https://${{ inputs.hostname }}/
+                  # Hide the sponsor marquee banner (sponsors live on /sponsors)
+                  NEXT_PUBLIC_REMOVE_ADVERTS: "1"
                   DENY_ROBOTS_TXT: ${{ inputs.deny_robots && '1' || '' }}
                   # Error monitoring
                   NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
