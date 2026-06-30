@@ -63,7 +63,7 @@ componentTests(
             },
         },
         {
-            name: "should render aws when NEXT_PUBLIC_REMOVE_ADVERTS is not 1",
+            name: "should render the sponsor banner when NEXT_PUBLIC_REMOVE_ADVERTS is not 1",
             patch: {
                 before: () => {
                     process.env.NEXT_PUBLIC_REMOVE_ADVERTS = "0";
@@ -82,7 +82,7 @@ componentTests(
                 marketingData: genericMockMarketingData,
             },
             test: (component) => {
-                expect(component.container.innerHTML).toContain("Hello");
+                expect(component.container.innerHTML).toContain("Sponsors");
             },
         },
     ],
