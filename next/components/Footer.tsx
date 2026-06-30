@@ -12,6 +12,19 @@ export default function Footer() {
                 </div>
                 <div className="flex items-center gap-3">
                     <a
+                        href="/about"
+                        className="text-purple-brand text-underline hover:text-purple-0"
+                    >
+                        About
+                    </a>
+                    <a
+                        href="https://github.com/LeanerCloud/cloud-instances.info/issues/new/"
+                        target="_blank"
+                        className="text-purple-brand text-underline hover:text-purple-0"
+                    >
+                        Report issues
+                    </a>
+                    <a
                         href="https://github.com/LeanerCloud/cloud-instances.info"
                         target="_blank"
                         className="text-purple-brand text-underline hover:text-purple-0"
