@@ -5,7 +5,7 @@
         "migrate-kv-r2-overlap": "tsx migrate-kv-r2-overlap.ts"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.806.0",
+        "@aws-sdk/client-s3": "^3.1076.0",
         "mime": "^4.0.7",
         "tsx": "^4.19.4"
     },
