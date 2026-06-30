@@ -14,3 +14,6 @@ mocks
 next/next-env.d.ts
 .wrangler
 deployment/node_modules
+.claude/
+infra/terraform/**/.terraform/
+infra/terraform/cloudflare_environment/worker/
