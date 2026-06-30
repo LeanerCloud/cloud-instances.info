@@ -43,6 +43,8 @@ jobs:
         runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v4
+            - name: un-tar the staging www at the root of the repo
+              run: curl -L https://instances.vantagestaging.sh/www_pre_build.tar.gz | tar -xzf -
             - uses: actions/setup-node@v4
               with:
                   node-version-file: next/.nvmrc
