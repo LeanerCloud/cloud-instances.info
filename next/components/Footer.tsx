@@ -11,6 +11,16 @@ export default function Footer() {
                     Cloud-Instances.info - Easy Cloud Instance Comparison
                 </div>
                 <div className="flex items-center gap-3">
+                    <span>
+                        vendor-neutral fork maintained by{" "}
+                        <a
+                            target="_blank"
+                            href="https://leanercloud.com"
+                            className="text-purple-brand text-underline hover:text-purple-0"
+                        >
+                            LeanerCloud
+                        </a>
+                    </span>
                     <a
                         href="/about"
                         className="text-purple-brand text-underline hover:text-purple-0"
@@ -24,23 +34,6 @@ export default function Footer() {
                     >
                         Report issues
                     </a>
-                    <a
-                        href="https://github.com/LeanerCloud/cloud-instances.info"
-                        target="_blank"
-                        className="text-purple-brand text-underline hover:text-purple-0"
-                    >
-                        GitHub
-                    </a>
-                    <span>
-                        Maintained by{" "}
-                        <a
-                            target="_blank"
-                            href="https://leanercloud.com"
-                            className="text-purple-brand text-underline hover:text-purple-0"
-                        >
-                            LeanerCloud
-                        </a>
-                    </span>
                 </div>
             </div>
         </div>

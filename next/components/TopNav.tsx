@@ -162,8 +162,12 @@ export default function TopNav() {
                             <span className="font-semibold text-white leading-5">
                                 Cloud Instances
                             </span>
+                            {/* Visually hidden: kept only as the translation-tool
+                                detection canary (a browser translator mutating this
+                                text flips translationToolDetected). The visible
+                                "vendor-neutral fork" label now lives in the footer. */}
                             <TranslationToolDetector
-                                className="text-xs italic text-gray-3"
+                                className="sr-only"
                                 text="vendor-neutral fork maintained by LeanerCloud"
                             />
                         </div>
