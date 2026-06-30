@@ -32,24 +32,25 @@ export default function SponsorsPage() {
                     <h1 className="text-4xl font-bold mb-4">Why Sponsor Us?</h1>
                     <div className="text-gray-600 space-y-4 max-w-2xl mx-auto text-left">
                         <p>
-                            The open source software powering Cloud-Instances.info
-                            has been built for many years by a few dedicated
-                            volunteers working on it in their limited spare time.
-                            The main author eventually gave up and sold it to
-                            Vantage, becoming a very important marketing asset.
+                            The open source software powering
+                            Cloud-Instances.info has been built for many years
+                            by a few dedicated volunteers working on it in their
+                            limited spare time. The main author eventually gave
+                            up and sold it to Vantage, becoming a very important
+                            marketing asset.
                         </p>
                         <p>
-                            After a few years of active development by Vantage, it
-                            became neglected and development happened only in a
-                            private branch for a while.
+                            After a few years of active development by Vantage,
+                            it became neglected and development happened only in
+                            a private branch for a while.
                         </p>
                         <p>
                             @cristim, a former co-maintainer before the Vantage
                             acquisition decided to fork the open source code and
                             now trying to bring it back into a community driven
-                            project, actively maintained and developed in the open,
-                            with the main page free of marketing messaging since
-                            most users use it for work.
+                            project, actively maintained and developed in the
+                            open, with the main page free of marketing messaging
+                            since most users use it for work.
                         </p>
                         <p>
                             But at the same time we want to fund a few people to
