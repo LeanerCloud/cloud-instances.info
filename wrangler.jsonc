@@ -39,6 +39,22 @@
             ],
         },
         "production": {
+            "name": "cloud-instances-worker-production",
+            // Named environments do NOT inherit top-level bindings, so the R2
+            // bucket + KV namespace must be redeclared here (matching staging),
+            // otherwise the worker has no ASSETS_BUCKET/ASSETS_KV and throws 1101.
+            "r2_buckets": [
+                {
+                    "bucket_name": "cloud-instances-assets-production",
+                    "binding": "ASSETS_BUCKET",
+                },
+            ],
+            "kv_namespaces": [
+                {
+                    "binding": "ASSETS_KV",
+                    "id": "a461ea5343054b13af96d12af4a1972a",
+                },
+            ],
             "routes": [
                 {
                     "pattern": "cloud-instances.info",
