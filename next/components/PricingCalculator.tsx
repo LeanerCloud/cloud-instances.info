@@ -10,6 +10,7 @@ import { currencyRateAtom, useRdsDeploymentOption } from "@/state";
 import CurrencySelector from "./CurrencySelector";
 import { browserBlockingLocalStorage } from "@/utils/abGroup";
 import { rdsEngineBucket, type RdsEnginePricing } from "@/utils/rdsPricing";
+import { commitmentTypeLabel } from "@/utils/dataMappings";
 
 interface Platform {
     ondemand: string | number;
@@ -299,7 +300,7 @@ function Calculator({
         if (reservedTermOptions.length > 0) {
             a.push(
                 {
-                    label: "1-Year Reserved",
+                    label: `1-Year ${commitmentTypeLabel(pricingType)}`,
                     value: currencyString(
                         root?.reserved?.[`yrTerm1${pricingType}`],
                         duration,
@@ -309,7 +310,7 @@ function Calculator({
                     ),
                 },
                 {
-                    label: "3-Year Reserved",
+                    label: `3-Year ${commitmentTypeLabel(pricingType)}`,
                     value: currencyString(
                         root?.reserved?.[`yrTerm3${pricingType}`],
                         duration,
