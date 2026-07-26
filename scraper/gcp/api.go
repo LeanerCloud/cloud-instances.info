@@ -249,8 +249,43 @@ func localSSDPartitionGB(machineTypeName string) int {
 	case strings.HasPrefix(nameLower, "a4x-"):
 		return 3000
 	default:
+		series, _, _ := strings.Cut(nameLower, "-")
+		if isMetal || !localSSD375Series[series] {
+			utils.SendWarning("GCP machine type", machineTypeName,
+				"bundles Local SSD but has no documented partition size (unlisted series, or a bare-metal variant,"+
+					"which for Z3 and C4 uses larger Titanium SSD disks); assuming 375 GB per partition")
+		}
 		return 375
 	}
+}
+
+// localSSD375Series are the machine series documented to bundle Local SSD in
+// 375 GB partitions. The Compute Engine API reports partition count but not
+// partition size, so a series outside this set would be silently mispriced at
+// 375 GB per partition; localSSDPartitionGB warns instead of assuming quietly.
+//
+// Membership is per series, not per shape, so it cannot vouch for a bare-metal
+// variant: Z3 and C4 metal shapes use larger disks than their own series does.
+// localSSDPartitionGB therefore warns about every unhandled -metal shape too,
+// however its series is listed here.
+//
+// Every series here was checked against the live machineTypes API: each
+// shape's partitionCount x 375 GB equals the capacity Google documents for it.
+// C4N and G4 are included from the docs alone (375 GiB disks) because as of
+// July 2026 neither exposes bundled Local SSD in the catalog; listing them
+// early keeps their rollout from raising a false alarm.
+var localSSD375Series = map[string]bool{
+	"a2":  true,
+	"a3":  true,
+	"a4":  true,
+	"c3":  true,
+	"c3d": true,
+	"c4":  true,
+	"c4a": true,
+	"c4d": true,
+	"c4n": true,
+	"g4":  true,
+	"h4d": true,
 }
 
 // bundledLocalSSDCapacityGB returns the total bundled Local SSD capacity in GB
@@ -1057,15 +1092,15 @@ func calculateHourlyPrice(price PriceInfo) float64 {
 	// vCPU/RAM total-price math downstream can keep treating every rate as
 	// per-GiB regardless of which unit the catalog happened to use.
 	if unit == "gby.h" {
-		dollars *= gibPerDecimalGB
+		dollars *= decimalGBPerGiB
 	}
 
 	return dollars
 }
 
-// gibPerDecimalGB is how many decimal gigabytes (1000^3 bytes) fit in one
+// decimalGBPerGiB is how many decimal gigabytes (1000^3 bytes) fit in one
 // binary gibibyte (1024^3 bytes).
-const gibPerDecimalGB = 1024 * 1024 * 1024 / 1e9
+const decimalGBPerGiB = 1024 * 1024 * 1024 / 1e9
 
 // GCP Region from API
 type GCPRegion struct {
@@ -1140,13 +1175,13 @@ func getRegionFriendlyName(region string) string {
 		"southamerica-west1":      "Santiago",
 		"europe-central2":         "Warsaw",
 		"europe-north1":           "Finland",
-		"europe-north2":           "Sweden",
+		"europe-north2":           "Stockholm",
 		"europe-southwest1":       "Madrid",
 		"europe-west1":            "Belgium",
 		"europe-west2":            "London",
 		"europe-west3":            "Frankfurt",
 		"europe-west4":            "Netherlands",
-		"europe-west5":            "Zurich",
+		"europe-west5":            "Galaxy Frankfurt",
 		"europe-west6":            "Zurich",
 		"europe-west8":            "Milan",
 		"europe-west9":            "Paris",

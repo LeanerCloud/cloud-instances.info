@@ -378,9 +378,13 @@ func TestProcessGCPDataM2CUDPricing(t *testing.T) {
 }
 
 // TestProcessGCPDataSSDCUDPricing proves the bundled Local SSD commitment rate
-// is folded into a shape's CUD price with family-specific-then-generic
-// precedence: a Z3 shape uses the Z3-scoped SSD commitment SKU while a C3 shape
-// (no C3-specific SSD commitment) falls back to the generic one.
+// is folded into a shape's CUD price, and that the family-versus-generic choice
+// follows ssdFamilyPrecedence. Z3 is in bundledSSDBillsAtGenericRate, so it
+// takes the generic commitment rate even though a Z3-scoped SSD commitment SKU
+// is present in the fixture; C3 has no Z3-style exception and no C3-specific
+// SSD commitment SKU, so it reaches the same generic rate the other way.
+//
+// The two SSD rates differ, so this fails if either path stops discriminating.
 func TestProcessGCPDataSSDCUDPricing(t *testing.T) {
 	const region = "us-central1"
 
@@ -391,8 +395,8 @@ func TestProcessGCPDataSSDCUDPricing(t *testing.T) {
 	c3cudCore, c3cudRam := 0.021414, 0.002869
 
 	// SSD commitment rates (per GiB-month). The Z3-specific rate differs from
-	// the generic one to prove precedence; C3 has no specific SKU so it uses
-	// the generic rate.
+	// the generic one so the precedence is observable: Z3 must ignore its own
+	// rate here, and C3 has no specific SKU to ignore.
 	z3ssdMonthly := 0.048
 	genericSSDMonthly := 0.064
 
@@ -410,6 +414,10 @@ func TestProcessGCPDataSSDCUDPricing(t *testing.T) {
 		cudSKU("c3-cud-core", "Commitment v1: C3 Cpu in Iowa for 1 Year", []string{region}),
 		cudSKU("c3-cud-ram", "Commitment v1: C3 Ram in Iowa for 1 Year", []string{region}),
 		cudSKU("generic-ssd-cud", "Commitment v1: Local SSD in Iowa for 1 Year", []string{region}),
+		// On-demand SSD rate, present in every real region. Only the CUD prices
+		// are asserted below; this keeps the fixture from tripping the
+		// missing-on-demand-SSD-rate warning.
+		onDemandSKU("generic-ssd-od", "SSD backed Local Storage running in Iowa", []string{region}),
 	}
 
 	pricing := map[string]PriceInfo{
@@ -423,6 +431,7 @@ func TestProcessGCPDataSSDCUDPricing(t *testing.T) {
 		"c3-cud-core":     usdRate("h", c3cudCore),
 		"c3-cud-ram":      usdRate("giby.h", c3cudRam),
 		"generic-ssd-cud": usdRate("giby.mo", genericSSDMonthly),
+		"generic-ssd-od":  usdRate("giby.mo", 0.08),
 	}
 
 	machineSpecs := map[string]*MachineSpecs{
@@ -433,8 +442,11 @@ func TestProcessGCPDataSSDCUDPricing(t *testing.T) {
 	instances := processGCPData(skus, pricing, machineSpecs, map[string]string{region: "Iowa"})
 
 	z3 := linuxPricing(t, mustInstance(t, instances, "z3-highmem-88-highlssd"), region)
-	wantZ3 := z3VCPU*z3cudCore + z3MemGB*z3cudRam + z3SSDGB*(z3ssdMonthly/730)
-	assertPrice(t, "z3 cud_1yr (family-specific SSD)", z3.CUD1Yr, wantZ3)
+	wantZ3 := z3VCPU*z3cudCore + z3MemGB*z3cudRam + z3SSDGB*(genericSSDMonthly/730)
+	assertPrice(t, "z3 cud_1yr (generic SSD despite a Z3-scoped SKU)", z3.CUD1Yr, wantZ3)
+	if z3ssdMonthly == genericSSDMonthly {
+		t.Fatal("the two SSD commitment rates must differ or this test cannot observe the precedence")
+	}
 
 	c3 := linuxPricing(t, mustInstance(t, instances, "c3-standard-8-lssd"), region)
 	wantC3 := c3VCPU*c3cudCore + c3MemGB*c3cudRam + c3SSDGB*(genericSSDMonthly/730)

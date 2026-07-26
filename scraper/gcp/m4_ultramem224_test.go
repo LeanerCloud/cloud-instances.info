@@ -11,7 +11,7 @@ import "testing"
 //
 // The M4Ultramem224 Ram SKUs are cataloged per decimal GB ("GBy.h"), unlike
 // almost every other RAM SKU (including plain M4's) which is per binary GiB
-// ("GiBy.h"); calculateHourlyPrice's gibPerDecimalGB scaling is what makes the
+// ("GiBy.h"); calculateHourlyPrice's decimalGBPerGiB scaling is what makes the
 // on-demand total below land exactly on Google's published
 // us-central1 price (41.464125836).
 func TestProcessGCPDataM4Ultramem224Pricing(t *testing.T) {
@@ -70,18 +70,16 @@ func TestProcessGCPDataM4Ultramem224Pricing(t *testing.T) {
 
 	instances := processGCPData(skus, pricing, machineSpecs, regions)
 
-	gibPerGB := 1073741824.0 / 1e9
-
 	ultramem, ok := instances["m4-ultramem-224"]
 	if !ok {
 		t.Fatalf("expected m4-ultramem-224 instance to be built")
 	}
 	ultramemLinux := linuxPricing(t, ultramem, region)
 
-	wantOnDemand := ultramemVCPU*core + ultramemMemGB*ramPerGB*gibPerGB
-	wantSpot := ultramemVCPU*spotCore + ultramemMemGB*spotRamPerGB*gibPerGB
-	wantCUD1Yr := ultramemVCPU*cud1Core + ultramemMemGB*cud1RamPerGB*gibPerGB
-	wantCUD3Yr := ultramemVCPU*cud3Core + ultramemMemGB*cud3RamPerGB*gibPerGB
+	wantOnDemand := ultramemVCPU*core + ultramemMemGB*ramPerGB*decimalGBPerGiB
+	wantSpot := ultramemVCPU*spotCore + ultramemMemGB*spotRamPerGB*decimalGBPerGiB
+	wantCUD1Yr := ultramemVCPU*cud1Core + ultramemMemGB*cud1RamPerGB*decimalGBPerGiB
+	wantCUD3Yr := ultramemVCPU*cud3Core + ultramemMemGB*cud3RamPerGB*decimalGBPerGiB
 
 	assertPrice(t, "m4-ultramem-224 ondemand", ultramemLinux.OnDemand, wantOnDemand)
 	assertPrice(t, "m4-ultramem-224 spot", ultramemLinux.Spot, wantSpot)

@@ -1,17 +1,21 @@
 package gcp
 
 import (
+	"bytes"
 	"encoding/json"
+	"log"
+	"os"
+	"strings"
 	"testing"
 )
 
 // TestBundledLocalSSDCapacityGB verifies capacity discovery from the Compute
-// Engine machineTypes API payload: the structured bundledLocalSsds field is
-// the primary source (partitionCount x per-partition size, 375 GB for every
-// series except Z3's 3,000 GiB Titanium SSD disks, or 6,000 GiB for the
-// bare-metal Z3 shapes), with the disk count in the human-readable
-// description as a fallback. Shapes without bundled Local SSD must report 0
-// so attachable-SSD families keep local_ssd=false.
+// Engine machineTypes API payload: capacity is partitionCount x per-partition
+// size, which is 375 GB except for the Titanium SSD shapes (Z3 at 3,000 GiB,
+// bare-metal Z3 at 6,000 GiB, bare-metal C4 at 3,000 GiB, and A4X at 3,000
+// GiB). Every expectation below equals the capacity Google documents for that
+// shape. Shapes without bundled Local SSD must report 0 so attachable-SSD
+// families keep local_ssd=false.
 func TestBundledLocalSSDCapacityGB(t *testing.T) {
 	cases := []struct {
 		name string
@@ -37,6 +41,11 @@ func TestBundledLocalSSDCapacityGB(t *testing.T) {
 			name: "z3 bare-metal titanium ssd disks are 6000 GiB each",
 			raw:  `{"name":"z3-highmem-192-highlssd-metal","guestCpus":192,"memoryMb":1572864,"bundledLocalSsds":{"defaultInterface":"NVME","partitionCount":12}}`,
 			want: 72000,
+		},
+		{
+			name: "non-metal c4 lssd shape keeps 375 GB partitions",
+			raw:  `{"name":"c4-standard-8-lssd","guestCpus":8,"memoryMb":30720,"bundledLocalSsds":{"defaultInterface":"NVME","partitionCount":1}}`,
+			want: 375,
 		},
 		{
 			name: "c4 bare-metal titanium ssd disks are 3000 GiB each",
@@ -291,6 +300,208 @@ func TestProcessGCPDataLocalSSDLegacyRegions(t *testing.T) {
 
 	assertPrice(t, "lssd ondemand (legacy multi-regional SKU)", lssdLinux.OnDemand, wantOnDemand)
 	assertPrice(t, "lssd spot (On Demand taxonomy)", lssdLinux.Spot, wantSpot)
+}
+
+// captureWarnings collects what utils.SendWarning logs while fn runs. It logs
+// through the standard logger, so redirecting that is enough to assert on a
+// warning without a test-only hook in the scraper itself.
+func captureWarnings(t *testing.T, fn func()) string {
+	t.Helper()
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	t.Cleanup(func() { log.SetOutput(os.Stderr) })
+	fn()
+	return buf.String()
+}
+
+// TestMissingLocalSSDRateIsReported pins the reason the SSD fold-in reports
+// misses at all: a bundled Local SSD shape in a region with no Local SSD rate
+// is priced core+RAM only, which is indistinguishable from the SSD-less bug
+// this scraper had. Silence there would ship a too-low price unnoticed.
+func TestMissingLocalSSDRateIsReported(t *testing.T) {
+	const region = "us-central1"
+
+	skus := []SKU{
+		onDemandSKU("od-core", "C3 Instance Core running in Iowa", []string{region}),
+		onDemandSKU("od-ram", "C3 Instance Ram running in Iowa", []string{region}),
+	}
+	pricing := map[string]PriceInfo{
+		"od-core": usdRate("h", 0.03398),
+		"od-ram":  usdRate("giby.h", 0.00456),
+	}
+	machineSpecs := map[string]*MachineSpecs{
+		"c3-standard-8-lssd": {VCPU: 8, MemoryGB: 32, Family: "Compute optimized", LocalSSDGB: 750},
+	}
+
+	var instances map[string]*GCPInstance
+	warnings := captureWarnings(t, func() {
+		instances = processGCPData(skus, pricing, machineSpecs, map[string]string{region: "Iowa"})
+	})
+
+	if !strings.Contains(warnings, "C3/us-central1/spot=false") {
+		t.Errorf("expected a missing Local SSD rate warning naming C3/us-central1, got:\n%s", warnings)
+	}
+
+	// The shape still ships at its core+RAM price; the warning is the only
+	// signal that the price is incomplete.
+	lssd := linuxPricing(t, mustInstance(t, instances, "c3-standard-8-lssd"), region)
+	assertPrice(t, "lssd ondemand without an SSD rate", lssd.OnDemand, 8*0.03398+32*0.00456)
+}
+
+// TestUnknownLocalSSDPartitionSizeIsReported covers the other silent-mispricing
+// path: partition size is a per-series constant the API never returns, so a
+// series (or bare-metal variant) that deviates from 375 GB must not be assumed
+// away. Bare metal is checked separately because Z3 and C4 metal shapes use
+// larger disks than the rest of their own series.
+func TestUnknownLocalSSDPartitionSizeIsReported(t *testing.T) {
+	cases := []struct {
+		name     string
+		wantWarn bool
+	}{
+		{"c3-standard-8-lssd", false},
+		{"c4-standard-288-lssd-metal", false},
+		{"z3-highmem-192-highlssd-metal", false},
+		{"a4x-maxgpu-4g-metal", false},
+		{"w9-standard-8-lssd", true},
+		{"c4d-standard-384-lssd-metal", true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			mt := MachineType{Name: tc.name, BundledLocalSsds: &BundledLocalSsds{PartitionCount: 2}}
+			warnings := captureWarnings(t, func() { bundledLocalSSDCapacityGB(mt) })
+			if got := strings.Contains(warnings, tc.name); got != tc.wantWarn {
+				t.Errorf("warned=%v want %v for %s (output: %s)", got, tc.wantWarn, tc.name, warnings)
+			}
+		})
+	}
+}
+
+// TestGenericLocalSSDFallbackIsReported covers the live c4/asia-southeast3
+// gap: Google offers c4-*-lssd shapes in Bangkok and sells C4 core and RAM
+// there, but publishes no "C4 Instance Local SSD running in Bangkok" SKU, so
+// the shape resolves to the legacy generic rate. Per-family Titanium SSD rates
+// run about twice the generic rate, so the shape ships understated by roughly
+// half its SSD component with no other symptom: the rate is present and is
+// identical across every C4 shape in the region, so neither the missing-rate
+// warning nor an implied-rate consistency check can see it.
+//
+// C3 is the control. It has no per-family Local SSD SKU in any region, so the
+// generic rate is the correct rate for it and must not warn.
+func TestGenericLocalSSDFallbackIsReported(t *testing.T) {
+	const iowa, bangkok = "us-central1", "asia-southeast3"
+	both := []string{iowa, bangkok}
+
+	skus := []SKU{
+		onDemandSKU("c4-core", "C4 Instance Core running in Iowa", both),
+		onDemandSKU("c4-ram", "C4 Instance Ram running in Iowa", both),
+		onDemandSKU("c3-core", "C3 Instance Core running in Iowa", both),
+		onDemandSKU("c3-ram", "C3 Instance Ram running in Iowa", both),
+		onDemandSKU("c4-ssd-iowa", "C4 Instance Local SSD running in Iowa", []string{iowa}),
+		onDemandSKU("generic-ssd", "SSD backed Local Storage", both),
+	}
+	pricing := map[string]PriceInfo{
+		"c4-core":     usdRate("h", 0.03638),
+		"c4-ram":      usdRate("giby.h", 0.004135),
+		"c3-core":     usdRate("h", 0.03398),
+		"c3-ram":      usdRate("giby.h", 0.00456),
+		"c4-ssd-iowa": usdRate("giby.mo", 0.16),
+		"generic-ssd": usdRate("giby.mo", 0.084),
+	}
+	machineSpecs := map[string]*MachineSpecs{
+		"c4-standard-8-lssd": {VCPU: 8, MemoryGB: 30, Family: "Compute optimized", LocalSSDGB: 375},
+		"c3-standard-8-lssd": {VCPU: 8, MemoryGB: 32, Family: "Compute optimized", LocalSSDGB: 750},
+	}
+
+	var instances map[string]*GCPInstance
+	warnings := captureWarnings(t, func() {
+		instances = processGCPData(skus, pricing, machineSpecs,
+			map[string]string{iowa: "Iowa", bangkok: "Bangkok"})
+	})
+
+	if !strings.Contains(warnings, "C4/asia-southeast3") {
+		t.Errorf("expected a generic Local SSD fallback warning naming C4/asia-southeast3, got:\n%s", warnings)
+	}
+	if strings.Contains(warnings, "C4/us-central1") {
+		t.Errorf("C4 has its own Iowa Local SSD SKU and must not warn there, got:\n%s", warnings)
+	}
+	for _, region := range both {
+		if strings.Contains(warnings, "C3/"+region) {
+			t.Errorf("C3 has no per-family Local SSD SKU anywhere, so the generic rate is correct; got:\n%s", warnings)
+		}
+	}
+
+	// The warned shape still ships, priced from the generic rate.
+	c4 := mustInstance(t, instances, "c4-standard-8-lssd")
+	assertPrice(t, "c4 lssd Bangkok on the generic SSD rate",
+		linuxPricing(t, c4, bangkok).OnDemand, 8*0.03638+30*0.004135+375*0.084/730)
+	assertPrice(t, "c4 lssd Iowa on its own C4 SSD rate",
+		linuxPricing(t, c4, iowa).OnDemand, 8*0.03638+30*0.004135+375*0.16/730)
+}
+
+// TestZ3BundledLocalSSDUsesGenericRate pins the one family whose bundled Local
+// SSD is billed at the generic rate despite having per-family Local SSD SKUs.
+// Google's published Z3 prices reconstruct from the generic rate and never from
+// the per-family one; see bundledSSDBillsAtGenericRate.
+//
+// The rates below are deliberately far apart so the assertions fail if the
+// precedence reverts. That matters more than usual here: bundledSSDBillsAtGenericRate
+// is keyed on the uppercased machine family, so a lowercase key would leave the
+// old behaviour in place with nothing else to notice it.
+func TestZ3BundledLocalSSDUsesGenericRate(t *testing.T) {
+	const iowa, berlin = "us-central1", "europe-west10"
+	both := []string{iowa, berlin}
+	const z3SSDMonthly, genericSSDMonthly = 0.16, 0.08
+
+	skus := []SKU{
+		onDemandSKU("z3-core", "Z3 Instance Core running in Iowa", both),
+		onDemandSKU("z3-ram", "Z3 Instance Ram running in Iowa", both),
+		onDemandSKU("c4-core", "C4 Instance Core running in Iowa", both),
+		onDemandSKU("c4-ram", "C4 Instance Ram running in Iowa", both),
+		onDemandSKU("z3-ssd", "Z3 Instance Local SSD running in Iowa", both),
+		onDemandSKU("c4-ssd", "C4 Instance Local SSD running in Iowa", both),
+		// Generic rate exists in Iowa only, so Berlin exercises the fallback to
+		// the per-family bucket that reversing the precedence has to preserve.
+		onDemandSKU("generic-ssd", "SSD backed Local Storage in Iowa", []string{iowa}),
+	}
+	pricing := map[string]PriceInfo{
+		"z3-core": usdRate("h", 0.0459), "z3-ram": usdRate("giby.h", 0.00614),
+		"c4-core": usdRate("h", 0.03638), "c4-ram": usdRate("giby.h", 0.004135),
+		"z3-ssd": usdRate("giby.mo", z3SSDMonthly), "c4-ssd": usdRate("giby.mo", 0.16),
+		"generic-ssd": usdRate("giby.mo", genericSSDMonthly),
+	}
+	machineSpecs := map[string]*MachineSpecs{
+		"z3-highmem-22-highlssd": {VCPU: 22, MemoryGB: 176, Family: "Storage optimized", LocalSSDGB: 9000},
+		"c4-standard-8-lssd":     {VCPU: 8, MemoryGB: 30, Family: "Compute optimized", LocalSSDGB: 375},
+	}
+
+	var instances map[string]*GCPInstance
+	warnings := captureWarnings(t, func() {
+		instances = processGCPData(skus, pricing, machineSpecs,
+			map[string]string{iowa: "Iowa", berlin: "Berlin"})
+	})
+
+	z3 := mustInstance(t, instances, "z3-highmem-22-highlssd")
+	z3Core, z3Mem := 22*0.0459+176*0.00614, 9000.0
+	assertPrice(t, "z3 uses the generic SSD rate where one exists",
+		linuxPricing(t, z3, iowa).OnDemand, z3Core+z3Mem*genericSSDMonthly/730)
+	assertPrice(t, "z3 falls back to its per-family rate where no generic rate exists",
+		linuxPricing(t, z3, berlin).OnDemand, z3Core+z3Mem*z3SSDMonthly/730)
+
+	// C4 must be untouched: the reversal is per-family, not global.
+	assertPrice(t, "c4 still uses its per-family SSD rate",
+		linuxPricing(t, mustInstance(t, instances, "c4-standard-8-lssd"), iowa).OnDemand,
+		8*0.03638+30*0.004135+375*0.16/730)
+
+	// Z3 resolving through the generic bucket is intended, so it must not be
+	// reported as a fallback. Berlin losing its generic rate is the new failure
+	// mode the reversal introduces, and that one must be reported.
+	if strings.Contains(warnings, "Z3/us-central1") {
+		t.Errorf("Z3 on the generic rate is intended and must not warn, got:\n%s", warnings)
+	}
+	if !strings.Contains(warnings, "Z3/europe-west10") {
+		t.Errorf("expected a warning that Z3 had no generic rate in europe-west10, got:\n%s", warnings)
+	}
 }
 
 func linuxPricing(t *testing.T, instance *GCPInstance, region string) *GCPPricingData {
