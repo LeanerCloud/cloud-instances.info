@@ -170,414 +170,416 @@ export const columnsGen = (
 ): ColumnDef<EC2Instance>[] => {
     type RegionPricing = Pricing[string];
 
-    const rdsOnDemand = (engineKey: string) => (pricing: RegionPricing | undefined) =>
-        rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)?.ondemand;
+    const rdsOnDemand =
+        (engineKey: string) => (pricing: RegionPricing | undefined) =>
+            rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)?.ondemand;
 
-    const rdsReserved = (engineKey: string) => (pricing: RegionPricing | undefined) =>
-        rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)?.reserved?.[
-            reservedTerm
-        ];
+    const rdsReserved =
+        (engineKey: string) => (pricing: RegionPricing | undefined) =>
+            rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)
+                ?.reserved?.[reservedTerm];
 
     return [
-    {
-        header: "Name",
-        id: "name",
-        accessorKey: "pretty_name",
-        sortingFn: "alphanumeric",
-        filterFn: regex({ accessorKey: "pretty_name" }),
-    },
-    {
-        header: "API Name",
-        id: "apiname",
-        accessorKey: "instance_type",
-        sortingFn: (rowA, rowB) => {
-            const valueA = rowA.original.instance_type;
-            const valueB = rowB.original.instance_type;
-            return sortByInstanceType(valueA, valueB, ".", "db.");
+        {
+            header: "Name",
+            id: "name",
+            accessorKey: "pretty_name",
+            sortingFn: "alphanumeric",
+            filterFn: regex({ accessorKey: "pretty_name" }),
         },
-        cell: (info) => {
-            const value = info.getValue() as string;
-            return (
-                <RegionLinkPreloader
-                    onClick={(e) => e.stopPropagation()}
-                    href={`/aws/rds/${value}`}
-                >
-                    {value}
-                </RegionLinkPreloader>
-            );
+        {
+            header: "API Name",
+            id: "apiname",
+            accessorKey: "instance_type",
+            sortingFn: (rowA, rowB) => {
+                const valueA = rowA.original.instance_type;
+                const valueB = rowB.original.instance_type;
+                return sortByInstanceType(valueA, valueB, ".", "db.");
+            },
+            cell: (info) => {
+                const value = info.getValue() as string;
+                return (
+                    <RegionLinkPreloader
+                        onClick={(e) => e.stopPropagation()}
+                        href={`/aws/rds/${value}`}
+                    >
+                        {value}
+                    </RegionLinkPreloader>
+                );
+            },
+            filterFn: regex({ accessorKey: "instance_type" }),
         },
-        filterFn: regex({ accessorKey: "instance_type" }),
-    },
-    {
-        accessorKey: "family",
-        header: "Compute Family",
-        size: 150,
-        id: "compute_family",
-        sortingFn: "alphanumeric",
-        filterFn: regex({ accessorKey: "family" }),
-    },
-    {
-        header: "Memory",
-        id: "memory",
-        accessorKey: "memory",
-        filterFn: expr,
-        sortingFn: "alphanumeric",
-    },
-    {
-        header: "Storage",
-        id: "storage",
-        accessorKey: "storage",
-        filterFn: expr,
-        sortingFn: "alphanumeric",
-    },
-    {
-        header: "EBS Throughput",
-        id: "ebs-throughput",
-        accessorKey: "ebs_throughput",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_throughput", filterValue),
-    },
-    {
-        header: "Processor",
-        id: "physical_processor",
-        accessorKey: "physicalProcessor",
-        sortingFn: "alphanumeric",
-        // @ts-expect-error: The typing is weird in the file
-        filterFn: regex({ accessorKey: "physicalProcessor" }),
-    },
-    {
-        header: "vCPUs",
-        id: "vcpu",
-        accessorKey: "vcpu",
-        filterFn: expr,
-        sortingFn: "alphanumeric",
-    },
-    {
-        header: "Network Performance",
-        id: "networkperf",
-        accessorKey: "network_performance",
-        sortingFn: "alphanumeric",
-        filterFn: regex({ accessorKey: "network_performance" }),
-    },
-    {
-        accessorKey: "arch",
-        header: "Arch",
-        size: 100,
-        id: "architecture",
-        sortingFn: (rowA, rowB) => {
-            const valueA = rowA.original.arch;
-            const valueB = rowB.original.arch;
-            if (!valueA) return -1;
-            if (!valueB) return 1;
-            return JSON.stringify(
-                typeof valueA === "string" ? [valueA] : valueA.sort(),
-            ).localeCompare(
-                JSON.stringify(
-                    typeof valueB === "string" ? [valueB] : valueB.sort(),
-                ),
-            );
+        {
+            accessorKey: "family",
+            header: "Compute Family",
+            size: 150,
+            id: "compute_family",
+            sortingFn: "alphanumeric",
+            filterFn: regex({ accessorKey: "family" }),
         },
-        ...makeCellWithRegexSorter("arch", (info) => {
-            const arch = info.getValue() as string[] | string;
-            if (typeof arch === "string") return arch;
-            if (!arch) return "";
-            return arch.sort().join(", ");
-        }),
-    },
-    {
-        header: "PostgreSQL",
-        id: "cost-ondemand-14",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("14")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "PostgreSQL Reserved Cost",
-        id: "cost-reserved-14t",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("14")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "MySQL On Demand Cost",
-        id: "cost-ondemand-2",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("2")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "MySQL Reserved Cost",
-        id: "cost-reserved-2",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("2")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Expresss On Demand Cost",
-        id: "cost-ondemand-10",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("10")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Expresss Reserved Cost",
-        id: "cost-reserved-10",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("10")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Web On Demand Cost",
-        id: "cost-ondemand-11",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("11")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Web Reserved Cost",
-        id: "cost-reserved-11",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("11")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Standard On Demand Cost",
-        id: "cost-ondemand-12",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("12")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Standard Reserved Cost",
-        id: "cost-reserved-12",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("12")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Enterprise On Demand Cost",
-        id: "cost-ondemand-15",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("15")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "SQL Server Enterprise Reserved Cost",
-        id: "cost-reserved-15",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("15")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "Aurora Postgres & MySQL On Demand Cost",
-        id: "cost-ondemand-21",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("21")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "Aurora Postgres & MySQL Reserved Cost",
-        id: "cost-reserved-21",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("21")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "Aurora I/O Optimized On Demand Cost",
-        id: "cost-ondemand-211",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("211")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "MariaDB On Demand Cost",
-        id: "cost-ondemand-18",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("18")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "MariaDB Reserved Cost",
-        id: "cost-reserved-18",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("18")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "Oracle Enterprise On Demand Cost",
-        id: "cost-ondemand-5",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsOnDemand("5")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "Oracle Enterprise Reserved Cost",
-        id: "cost-reserved-5",
-        accessorKey: "pricing",
-        ...getPricingSorter(
-            selectedRegion,
-            pricingUnit,
-            costDuration,
-            (pricing) => rdsReserved("5")(pricing),
-            true,
-            currency,
-        ),
-    },
-    {
-        header: "EBS Optimized: Baseline Bandwidth",
-        id: "ebs-baseline-bandwidth",
-        accessorKey: "ebs_baseline_bandwidth",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_baseline_bandwidth", filterValue),
-    },
-    {
-        header: "EBS Optimized: Baseline Throughput (128K)",
-        id: "ebs-baseline-throughput",
-        accessorKey: "ebs_baseline_throughput",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_baseline_throughput", filterValue),
-    },
-    {
-        header: "EBS Optimized: Baseline IOPS (16K)",
-        id: "ebs-baseline-iops",
-        accessorKey: "ebs_baseline_iops",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_baseline_iops", filterValue),
-    },
-    {
-        header: "EBS Optimized: Max Bandwidth",
-        id: "ebs-max-bandwidth",
-        accessorKey: "ebs_max_bandwidth",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_max_bandwidth", filterValue),
-    },
-    {
-        header: "EBS Optimized: Max Throughput (128K)",
-        id: "ebs-max-throughput",
-        accessorKey: "ebs_throughput",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) =>
-            expr(row, "ebs_throughput", filterValue),
-    },
-    {
-        header: "EBS Optimized: Max IOPS (16K)",
-        id: "ebs-iops",
-        accessorKey: "ebs_iops",
-        sortingFn: "alphanumeric",
-        filterFn: (row, _, filterValue) => expr(row, "ebs_iops", filterValue),
-    },
+        {
+            header: "Memory",
+            id: "memory",
+            accessorKey: "memory",
+            filterFn: expr,
+            sortingFn: "alphanumeric",
+        },
+        {
+            header: "Storage",
+            id: "storage",
+            accessorKey: "storage",
+            filterFn: expr,
+            sortingFn: "alphanumeric",
+        },
+        {
+            header: "EBS Throughput",
+            id: "ebs-throughput",
+            accessorKey: "ebs_throughput",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_throughput", filterValue),
+        },
+        {
+            header: "Processor",
+            id: "physical_processor",
+            accessorKey: "physicalProcessor",
+            sortingFn: "alphanumeric",
+            // @ts-expect-error: The typing is weird in the file
+            filterFn: regex({ accessorKey: "physicalProcessor" }),
+        },
+        {
+            header: "vCPUs",
+            id: "vcpu",
+            accessorKey: "vcpu",
+            filterFn: expr,
+            sortingFn: "alphanumeric",
+        },
+        {
+            header: "Network Performance",
+            id: "networkperf",
+            accessorKey: "network_performance",
+            sortingFn: "alphanumeric",
+            filterFn: regex({ accessorKey: "network_performance" }),
+        },
+        {
+            accessorKey: "arch",
+            header: "Arch",
+            size: 100,
+            id: "architecture",
+            sortingFn: (rowA, rowB) => {
+                const valueA = rowA.original.arch;
+                const valueB = rowB.original.arch;
+                if (!valueA) return -1;
+                if (!valueB) return 1;
+                return JSON.stringify(
+                    typeof valueA === "string" ? [valueA] : valueA.sort(),
+                ).localeCompare(
+                    JSON.stringify(
+                        typeof valueB === "string" ? [valueB] : valueB.sort(),
+                    ),
+                );
+            },
+            ...makeCellWithRegexSorter("arch", (info) => {
+                const arch = info.getValue() as string[] | string;
+                if (typeof arch === "string") return arch;
+                if (!arch) return "";
+                return arch.sort().join(", ");
+            }),
+        },
+        {
+            header: "PostgreSQL",
+            id: "cost-ondemand-14",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("14")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "PostgreSQL Reserved Cost",
+            id: "cost-reserved-14t",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("14")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "MySQL On Demand Cost",
+            id: "cost-ondemand-2",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("2")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "MySQL Reserved Cost",
+            id: "cost-reserved-2",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("2")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Expresss On Demand Cost",
+            id: "cost-ondemand-10",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("10")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Expresss Reserved Cost",
+            id: "cost-reserved-10",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("10")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Web On Demand Cost",
+            id: "cost-ondemand-11",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("11")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Web Reserved Cost",
+            id: "cost-reserved-11",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("11")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Standard On Demand Cost",
+            id: "cost-ondemand-12",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("12")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Standard Reserved Cost",
+            id: "cost-reserved-12",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("12")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Enterprise On Demand Cost",
+            id: "cost-ondemand-15",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("15")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "SQL Server Enterprise Reserved Cost",
+            id: "cost-reserved-15",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("15")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "Aurora Postgres & MySQL On Demand Cost",
+            id: "cost-ondemand-21",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("21")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "Aurora Postgres & MySQL Reserved Cost",
+            id: "cost-reserved-21",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("21")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "Aurora I/O Optimized On Demand Cost",
+            id: "cost-ondemand-211",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("211")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "MariaDB On Demand Cost",
+            id: "cost-ondemand-18",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("18")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "MariaDB Reserved Cost",
+            id: "cost-reserved-18",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("18")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "Oracle Enterprise On Demand Cost",
+            id: "cost-ondemand-5",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsOnDemand("5")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "Oracle Enterprise Reserved Cost",
+            id: "cost-reserved-5",
+            accessorKey: "pricing",
+            ...getPricingSorter(
+                selectedRegion,
+                pricingUnit,
+                costDuration,
+                (pricing) => rdsReserved("5")(pricing),
+                true,
+                currency,
+            ),
+        },
+        {
+            header: "EBS Optimized: Baseline Bandwidth",
+            id: "ebs-baseline-bandwidth",
+            accessorKey: "ebs_baseline_bandwidth",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_baseline_bandwidth", filterValue),
+        },
+        {
+            header: "EBS Optimized: Baseline Throughput (128K)",
+            id: "ebs-baseline-throughput",
+            accessorKey: "ebs_baseline_throughput",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_baseline_throughput", filterValue),
+        },
+        {
+            header: "EBS Optimized: Baseline IOPS (16K)",
+            id: "ebs-baseline-iops",
+            accessorKey: "ebs_baseline_iops",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_baseline_iops", filterValue),
+        },
+        {
+            header: "EBS Optimized: Max Bandwidth",
+            id: "ebs-max-bandwidth",
+            accessorKey: "ebs_max_bandwidth",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_max_bandwidth", filterValue),
+        },
+        {
+            header: "EBS Optimized: Max Throughput (128K)",
+            id: "ebs-max-throughput",
+            accessorKey: "ebs_throughput",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_throughput", filterValue),
+        },
+        {
+            header: "EBS Optimized: Max IOPS (16K)",
+            id: "ebs-iops",
+            accessorKey: "ebs_iops",
+            sortingFn: "alphanumeric",
+            filterFn: (row, _, filterValue) =>
+                expr(row, "ebs_iops", filterValue),
+        },
     ];
 };

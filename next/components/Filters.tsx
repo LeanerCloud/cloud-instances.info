@@ -1,6 +1,11 @@
 "use client";
 
-import { CostDuration, PricingUnit, Region, RdsDeploymentOption } from "@/types";
+import {
+    CostDuration,
+    PricingUnit,
+    Region,
+    RdsDeploymentOption,
+} from "@/types";
 import FilterDropdown from "./FilterDropdown";
 import ColumnFilter from "./ColumnFilter";
 import ExportDropdown from "./ExportDropdown";

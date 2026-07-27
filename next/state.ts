@@ -112,10 +112,7 @@ export function useRdsDeploymentOption(pathname: string) {
         "rdsDeploymentOption",
         pathname,
         "single-az",
-    ) as readonly [
-        RdsDeploymentOption,
-        (value: RdsDeploymentOption) => void,
-    ];
+    ) as readonly [RdsDeploymentOption, (value: RdsDeploymentOption) => void];
 }
 
 export function useCompareOn(pathname: string) {
