@@ -13,7 +13,7 @@ export function rdsEngineBucket(
     pricingByEngine: Pricing[string] | undefined,
     engineKey: string,
     deployment: RdsDeploymentOption,
-): Pick<RdsEnginePricing, "ondemand" | "reserved"> | undefined {
+): PlatformPricing | undefined {
     const engine = pricingByEngine?.[engineKey];
     if (!engine) {
         return undefined;
