@@ -1,7 +1,12 @@
 import { atom } from "atomtree";
 import { useEffect, useSyncExternalStore } from "react";
 import handleCompressedFile from "./utils/handleCompressedFile";
-import { CostDuration, PricingUnit, RdsDeploymentOption } from "./types";
+import {
+    CostDuration,
+    PricePrecision,
+    PricingUnit,
+    RdsDeploymentOption,
+} from "./types";
 import {
     useGlobalStateValue,
     useLastCurrencyLocalStorageValue,
@@ -96,6 +101,13 @@ export function useDuration(pathname: string) {
     return useGlobalStateValue("costDuration", pathname, "hourly") as readonly [
         CostDuration,
         (value: CostDuration) => void,
+    ];
+}
+
+export function usePricePrecision(pathname: string) {
+    return useGlobalStateValue("pricePrecision", pathname, "auto") as readonly [
+        PricePrecision,
+        (value: PricePrecision) => void,
     ];
 }
 

@@ -5,7 +5,12 @@ import {
     expr,
     transformAllDataTables,
 } from "./shared";
-import { EC2Instance, PricingUnit, CostDuration } from "@/types";
+import {
+    EC2Instance,
+    PricingUnit,
+    CostDuration,
+    PricePrecision,
+} from "@/types";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
 import sortByInstanceType from "../sortByInstanceType";
 import { getPricingSorter } from "./ec2/columns";
@@ -64,6 +69,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     reservedTerm: string,
     currency: {
         code: string;
@@ -145,6 +151,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Redis?.ondemand,
             true,
             currency,
@@ -158,6 +165,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Redis?.reserved?.[reservedTerm],
             true,
             currency,
@@ -171,6 +179,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Memcached?.ondemand,
             true,
             currency,
@@ -184,6 +193,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Memcached?.reserved?.[reservedTerm],
             true,
             currency,
@@ -197,6 +207,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Valkey?.ondemand,
             true,
             currency,
@@ -210,6 +221,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.Valkey?.reserved?.[reservedTerm],
             true,
             currency,

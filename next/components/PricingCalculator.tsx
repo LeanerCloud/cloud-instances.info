@@ -49,7 +49,7 @@ function currencyString(
     const formatted = Intl.NumberFormat("en-US", {
         style: "currency",
         currency,
-        maximumFractionDigits: 3,
+        minimumFractionDigits: 3,
     }).format(mul * rate);
     return formatted;
 }

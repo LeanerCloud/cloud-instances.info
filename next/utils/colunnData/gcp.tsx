@@ -1,10 +1,11 @@
-import { PricingUnit } from "@/types";
+import { PricingUnit, PricePrecision } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import {
     regex,
     makeCellWithRegexSorter,
     expr,
     transformAllDataTables,
+    resolvePricePrecision,
 } from "./shared";
 import { CostDuration } from "@/types";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
@@ -146,6 +147,7 @@ export function calculateAndFormatCost(
         code: string;
         usdRate: number;
     },
+    pricePrecision: PricePrecision = "auto",
 ): string | undefined {
     const perTime = calculateCost(
         price,
@@ -156,8 +158,7 @@ export function calculateAndFormatCost(
     );
     if (perTime === -1) return undefined;
 
-    const precision =
-        costDuration === "secondly" || costDuration === "minutely" ? 6 : 4;
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
 
     const measuringUnits = {
         instances: "",
@@ -179,7 +180,7 @@ export function calculateAndFormatCost(
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
-        maximumFractionDigits: precision,
+        minimumFractionDigits: precision,
     }).format(perTime);
 
     return `${currencyData}${pricingMeasuringUnits}`;
@@ -189,6 +190,7 @@ function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     getter: (pricing: GCPPricing[string] | undefined) => number | undefined,
     currency: {
         code: string;
@@ -236,6 +238,7 @@ function getPricingSorter(
                 pricingUnit,
                 costDuration,
                 currency,
+                pricePrecision,
             );
         }),
     } satisfies Partial<ColumnDef<GCPInstance>>;
@@ -245,6 +248,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     _reservedTerm: string, // GCP doesn't use reserved terms, but we need to match the signature
     currency: {
         code: string;
@@ -387,6 +391,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.ondemand,
                 currency,
             ),
@@ -399,6 +404,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.cud_1yr,
                 currency,
             ),
@@ -411,6 +417,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.cud_3yr,
                 currency,
             ),
@@ -423,6 +430,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.spot,
                 currency,
             ),
@@ -435,6 +443,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.ondemand,
                 currency,
             ),
@@ -447,6 +456,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.spot,
                 currency,
             ),
