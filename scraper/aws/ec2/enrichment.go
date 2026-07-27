@@ -129,6 +129,11 @@ func enrichEc2Instance(instance *EC2Instance, attributes map[string]string, ec2A
 			instance.NitroEnclaveSupport = &enclave
 		}
 
+		trueVal := true
+		if strings.Contains(instance.InstanceType, ".metal") {
+			instance.NitroSupport = &trueVal
+		}
+
 	} else {
 		if instance.Arch == nil {
 			// Try and figure out the value with a best guess
