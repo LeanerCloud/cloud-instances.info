@@ -1,7 +1,7 @@
 import { atom } from "atomtree";
 import { useEffect, useSyncExternalStore } from "react";
 import handleCompressedFile from "./utils/handleCompressedFile";
-import { CostDuration, PricingUnit } from "./types";
+import { CostDuration, PricingUnit, RdsDeploymentOption } from "./types";
 import {
     useGlobalStateValue,
     useLastCurrencyLocalStorageValue,
@@ -105,6 +105,17 @@ export function useReservedTerm(pathname: string) {
         : "yrTerm1Standard.noUpfront";
 
     return useGlobalStateValue("reservedTerm", pathname, defaultReservedTerm);
+}
+
+export function useRdsDeploymentOption(pathname: string) {
+    return useGlobalStateValue(
+        "rdsDeploymentOption",
+        pathname,
+        "single-az",
+    ) as readonly [
+        RdsDeploymentOption,
+        (value: RdsDeploymentOption) => void,
+    ];
 }
 
 export function useCompareOn(pathname: string) {

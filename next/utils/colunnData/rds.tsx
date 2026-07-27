@@ -1,4 +1,10 @@
-import { CostDuration, EC2Instance, PricingUnit } from "@/types";
+import {
+    CostDuration,
+    EC2Instance,
+    Pricing,
+    PricingUnit,
+    RdsDeploymentOption,
+} from "@/types";
 import {
     regex,
     makeCellWithRegexSorter,
@@ -9,6 +15,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
 import { getPricingSorter } from "./ec2/columns";
 import sortByInstanceType from "../sortByInstanceType";
+import { rdsEngineBucket } from "../rdsPricing";
 
 const initialColumnsArr = [
     ["name", true],
@@ -159,7 +166,19 @@ export const columnsGen = (
         usdRate: number;
         cnyRate: number;
     },
-): ColumnDef<EC2Instance>[] => [
+    rdsDeploymentOption: RdsDeploymentOption = "single-az",
+): ColumnDef<EC2Instance>[] => {
+    type RegionPricing = Pricing[string];
+
+    const rdsOnDemand = (engineKey: string) => (pricing: RegionPricing | undefined) =>
+        rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)?.ondemand;
+
+    const rdsReserved = (engineKey: string) => (pricing: RegionPricing | undefined) =>
+        rdsEngineBucket(pricing, engineKey, rdsDeploymentOption)?.reserved?.[
+            reservedTerm
+        ];
+
+    return [
     {
         header: "Name",
         id: "name",
@@ -274,7 +293,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["14"]?.ondemand,
+            (pricing) => rdsOnDemand("14")(pricing),
             true,
             currency,
         ),
@@ -287,7 +306,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["14"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("14")(pricing),
             true,
             currency,
         ),
@@ -300,7 +319,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["2"]?.ondemand,
+            (pricing) => rdsOnDemand("2")(pricing),
             true,
             currency,
         ),
@@ -313,7 +332,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["2"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("2")(pricing),
             true,
             currency,
         ),
@@ -326,7 +345,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["10"]?.ondemand,
+            (pricing) => rdsOnDemand("10")(pricing),
             true,
             currency,
         ),
@@ -339,7 +358,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["10"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("10")(pricing),
             true,
             currency,
         ),
@@ -352,7 +371,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["11"]?.ondemand,
+            (pricing) => rdsOnDemand("11")(pricing),
             true,
             currency,
         ),
@@ -365,7 +384,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["11"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("11")(pricing),
             true,
             currency,
         ),
@@ -378,7 +397,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["12"]?.ondemand,
+            (pricing) => rdsOnDemand("12")(pricing),
             true,
             currency,
         ),
@@ -391,7 +410,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["12"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("12")(pricing),
             true,
             currency,
         ),
@@ -404,7 +423,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["15"]?.ondemand,
+            (pricing) => rdsOnDemand("15")(pricing),
             true,
             currency,
         ),
@@ -417,7 +436,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["15"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("15")(pricing),
             true,
             currency,
         ),
@@ -430,7 +449,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["21"]?.ondemand,
+            (pricing) => rdsOnDemand("21")(pricing),
             true,
             currency,
         ),
@@ -443,7 +462,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["21"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("21")(pricing),
             true,
             currency,
         ),
@@ -456,7 +475,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["211"]?.ondemand,
+            (pricing) => rdsOnDemand("211")(pricing),
             true,
             currency,
         ),
@@ -469,7 +488,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["18"]?.ondemand,
+            (pricing) => rdsOnDemand("18")(pricing),
             true,
             currency,
         ),
@@ -482,7 +501,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["18"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("18")(pricing),
             true,
             currency,
         ),
@@ -495,7 +514,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["5"]?.ondemand,
+            (pricing) => rdsOnDemand("5")(pricing),
             true,
             currency,
         ),
@@ -508,7 +527,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
-            (pricing) => pricing?.["5"]?.reserved?.[reservedTerm],
+            (pricing) => rdsReserved("5")(pricing),
             true,
             currency,
         ),
@@ -560,4 +579,5 @@ export const columnsGen = (
         sortingFn: "alphanumeric",
         filterFn: (row, _, filterValue) => expr(row, "ebs_iops", filterValue),
     },
-];
+    ];
+};

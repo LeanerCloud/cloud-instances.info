@@ -142,3 +142,5 @@ export type CostDuration =
     | "weekly"
     | "monthly"
     | "annually";
+
+export type RdsDeploymentOption = "single-az" | "multi-az";
