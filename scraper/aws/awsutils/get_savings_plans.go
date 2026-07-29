@@ -21,14 +21,15 @@ func loadAwsUrlJson(baseUrl string, awsUrl string, val any) error {
 }
 
 // savingsPlanTermSuffix maps the AWS productFamily field to the middle segment.
-// EC2 Instance Savings Plans get a distinct suffix so they do not
-// overwrite Compute (and Database / SageMaker) rates that keep "Savings".
-// This functionality could be extended for SageMaker/DataBase pricing.
 func savingsPlanTermSuffix(productFamily string) string {
-	if productFamily == "EC2InstanceSavingsPlans" {
+	switch productFamily {
+	case "EC2InstanceSavingsPlans":
 		return "InstanceSavings"
+	case "DatabaseSavingsPlans":
+		return "DatabaseSavings"
+	default:
+		return "Savings" // Compute, SageMaker, etc.
 	}
-	return "Savings"
 }
 
 func translateReservedTermAttributes(purchaseTerm, productFamily, purchaseOption string) string {

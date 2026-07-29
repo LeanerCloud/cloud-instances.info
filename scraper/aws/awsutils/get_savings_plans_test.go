@@ -11,7 +11,7 @@ func TestSavingsPlanTermSuffix(t *testing.T) {
 	}{
 		{"EC2InstanceSavingsPlans", "InstanceSavings"},
 		{"ComputeSavingsPlans", "Savings"},
-		{"DatabaseSavingsPlans", "Savings"},
+		{"DatabaseSavingsPlans", "DatabaseSavings"},
 		{"SageMakerSavingsPlans", "Savings"},
 	}
 	for _, tc := range tests {
@@ -32,7 +32,7 @@ func TestTranslateReservedTermAttributes(t *testing.T) {
 		{"1yr", "EC2InstanceSavingsPlans", "No Upfront", "yrTerm1InstanceSavings.noUpfront"},
 		{"3yr", "ComputeSavingsPlans", "All Upfront", "yrTerm3Savings.allUpfront"},
 		{"3yr", "EC2InstanceSavingsPlans", "Partial Upfront", "yrTerm3InstanceSavings.partialUpfront"},
-		{"1yr", "DatabaseSavingsPlans", "No Upfront", "yrTerm1Savings.noUpfront"},
+		{"1yr", "DatabaseSavingsPlans", "No Upfront", "yrTerm1DatabaseSavings.noUpfront"},
 	}
 	for _, tc := range tests {
 		got := translateReservedTermAttributes(tc.purchaseTerm, tc.productFamily, tc.purchaseOption)
