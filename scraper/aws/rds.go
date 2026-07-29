@@ -49,6 +49,23 @@ var pipeIntoAverager = []string{
 	"vcpu",
 }
 
+var RDS_SUPPORTED_DEPLOYMENT_OPTIONS = map[string]bool{
+	"Single-AZ": true,
+	"Multi-AZ":  true,
+}
+
+type genericAwsPricingData struct {
+	OnDemand float64            `json:"ondemand"`
+	Reserved map[string]float64 `json:"reserved"`
+}
+
+// rdsPricing is per-engine pricing for one RDS instance type in one region.
+// Single-AZ ondemand/reserved serialize at the root; Multi-AZ nests under multi_az.
+type rdsPricing struct {
+	genericAwsPricingData
+	MultiAZ *genericAwsPricingData `json:"multi_az,omitempty"`
+}
+
 func addRdsVcpuByEngine(instance map[string]any, attributes map[string]string) {
 	vcpu := attributes["vcpu"]
 	if vcpu == "" || vcpu == "NA" {
@@ -129,7 +146,6 @@ var BAD_DESCRIPTION_CHUNKS = []string{
 	"storage",
 	"iops",
 	"requests",
-	"multi-az",
 }
 
 // SQL_SERVER_REAL_EDITIONS are the SQL Server editions that carry a separately
@@ -151,11 +167,6 @@ func isUnbundledSqlServerProduct(attributes map[string]string) bool {
 	return attributes["databaseEngine"] == "SQL Server" &&
 		attributes["licenseModel"] == "Bring your own media" &&
 		SQL_SERVER_REAL_EDITIONS[attributes["databaseEdition"]]
-}
-
-type genericAwsPricingData struct {
-	OnDemand float64            `json:"ondemand"`
-	Reserved map[string]float64 `json:"reserved"`
 }
 
 // unbundledSqlServerLicenseSurcharge returns the per-hour Windows + SQL Server
@@ -222,7 +233,7 @@ func processRdsOnDemandDimension(
 	attributes map[string]string,
 	instanceType string,
 	priceDimension awsutils.RegionPriceDimension,
-	getPricingdata func(platform string) *genericAwsPricingData,
+	getPricingBucket func(platform string) *genericAwsPricingData,
 	currency string,
 	unbundledInstanceTypes map[string]bool,
 	licenseRates map[engineCode]float64,
@@ -259,12 +270,23 @@ func processRdsOnDemandDimension(
 	if attributes["storage"] == "Aurora IO Optimization Mode" {
 		engineCode = "211"
 	}
-	pricingData := getPricingdata(engineCode)
-	pricingData.OnDemand = usdF
 
-	pricingData = getPricingdata(attributes["databaseEngine"])
-	if usdF > pricingData.OnDemand {
-		pricingData.OnDemand = usdF
+	pricingBucket := getPricingBucket(engineCode)
+
+	if pricingBucket == nil {
+		return
+	}
+
+	pricingBucket.OnDemand = usdF
+
+	pricingBucket = getPricingBucket(attributes["databaseEngine"])
+
+	if pricingBucket == nil {
+		return
+	}
+
+	if usdF > pricingBucket.OnDemand {
+		pricingBucket.OnDemand = usdF
 	}
 }
 
@@ -283,7 +305,7 @@ func translateGenericAwsReservedTermAttributes(termAttributes map[string]string)
 }
 
 func processRDSAndElastiCacheReservedOffer(
-	data []*genericAwsPricingData,
+	pricingBuckets []*genericAwsPricingData,
 	termCode string,
 	offer awsutils.RegionTerm,
 	currency string,
@@ -292,9 +314,9 @@ func processRDSAndElastiCacheReservedOffer(
 	if effectiveHourly <= 0 {
 		return
 	}
-	for _, data := range data {
-		if effectiveHourly > data.Reserved[termCode] {
-			data.Reserved[termCode] = effectiveHourly
+	for _, pricingBucket := range pricingBuckets {
+		if effectiveHourly > pricingBucket.Reserved[termCode] {
+			pricingBucket.Reserved[termCode] = effectiveHourly
 		}
 	}
 }
@@ -302,20 +324,16 @@ func processRDSAndElastiCacheReservedOffer(
 func processRdsReservedOffer(
 	attributes map[string]string,
 	offer awsutils.RegionTerm,
-	getPricingData func(platform string) *genericAwsPricingData,
+	getPricingBucket func(platform string) *genericAwsPricingData,
 	currency string,
 ) {
-	if attributes["deploymentOption"] != "Single-AZ" {
+	pricingBuckets := rdsEnginePricingBuckets(getPricingBucket, attributes)
+	if pricingBuckets == nil {
 		return
 	}
 
-	data := []*genericAwsPricingData{
-		getPricingData(attributes["databaseEngine"]),
-		getPricingData(attributes["engineCode"]),
-	}
-
 	termCode := translateGenericAwsReservedTermAttributes(offer.TermAttributes)
-	processRDSAndElastiCacheReservedOffer(data, termCode, offer, currency)
+	processRDSAndElastiCacheReservedOffer(pricingBuckets, termCode, offer, currency)
 }
 
 type genericAwsSkuData struct {
@@ -330,20 +348,99 @@ var RDS_DUPLICATED_KEYS = map[string]string{
 	"arch":                "processorArchitecture",
 }
 
-func getgenericAwsPricingData(instance map[string]any, regionName, platform string) *genericAwsPricingData {
-	regionMap := instance["pricing"].(map[string]map[string]any)[regionName]
-	if regionMap == nil {
-		regionMap = make(map[string]any)
-		instance["pricing"].(map[string]map[string]any)[regionName] = regionMap
+func getOrCreateRdsEnginePricing(instance map[string]any, regionName, platform string) *rdsPricing {
+	pricingByRegion := instance["pricing"].(map[string]map[string]*rdsPricing)
+	pricingByEngine := pricingByRegion[regionName]
+	if pricingByEngine == nil {
+		pricingByEngine = make(map[string]*rdsPricing)
+		pricingByRegion[regionName] = pricingByEngine
 	}
-	osMap := regionMap[platform]
-	if osMap == nil {
-		osMap = &genericAwsPricingData{
-			Reserved: make(map[string]float64),
+	enginePricing := pricingByEngine[platform]
+	if enginePricing == nil {
+		enginePricing = &rdsPricing{
+			genericAwsPricingData: genericAwsPricingData{
+				Reserved: make(map[string]float64),
+			},
 		}
-		regionMap[platform] = osMap
+		pricingByEngine[platform] = enginePricing
 	}
-	return osMap.(*genericAwsPricingData)
+	return enginePricing
+}
+
+func getRdsDeploymentPricingBucket(
+	instance map[string]any,
+	regionName, platform, deploymentOption string,
+) *genericAwsPricingData {
+	enginePricing := getOrCreateRdsEnginePricing(instance, regionName, platform)
+	switch deploymentOption {
+	case "Single-AZ":
+		return &enginePricing.genericAwsPricingData
+	case "Multi-AZ":
+		if enginePricing.MultiAZ == nil {
+			enginePricing.MultiAZ = &genericAwsPricingData{
+				Reserved: make(map[string]float64),
+			}
+		}
+		return enginePricing.MultiAZ
+	default:
+		return nil
+	}
+}
+
+func rdsPricingBucketByEngineKey(
+	instance map[string]any,
+	regionName, deploymentOption string,
+) func(platform string) *genericAwsPricingData {
+	return func(platform string) *genericAwsPricingData {
+		return getRdsDeploymentPricingBucket(instance, regionName, platform, deploymentOption)
+	}
+}
+
+func rdsEnginePricingBuckets(
+	getPricingBucket func(platform string) *genericAwsPricingData,
+	attributes map[string]string,
+) []*genericAwsPricingData {
+	engineBucket := getPricingBucket(attributes["databaseEngine"])
+	if engineBucket == nil {
+		return nil
+	}
+	codeBucket := getPricingBucket(attributes["engineCode"])
+	if codeBucket == nil {
+		return nil
+	}
+	return []*genericAwsPricingData{engineBucket, codeBucket}
+}
+
+func (p *rdsPricing) hasPricing() bool {
+	if p.OnDemand != 0 || len(p.Reserved) > 0 {
+		return true
+	}
+	return p.MultiAZ != nil &&
+		(p.MultiAZ.OnDemand != 0 || len(p.MultiAZ.Reserved) > 0)
+}
+
+func cleanEmptyRdsRegions(
+	pricing map[string]map[string]*rdsPricing,
+	regionDescriptions map[string]string,
+) map[string]string {
+	for region, pricingByEngine := range pricing {
+		okEngineCount := 0
+		for engine, pricingForEngine := range pricingByEngine {
+			if !pricingForEngine.hasPricing() {
+				delete(pricingByEngine, engine)
+			} else {
+				okEngineCount++
+			}
+		}
+		if okEngineCount == 0 {
+			delete(pricing, region)
+		}
+	}
+	regions := make(map[string]string)
+	for region := range pricing {
+		regions[region] = regionDescriptions[region]
+	}
+	return regions
 }
 
 func processRDSData(
@@ -403,6 +500,10 @@ func processRDSData(
 				unbundledSqlServerInstanceTypes[instanceType] = true
 			}
 
+			if !RDS_SUPPORTED_DEPLOYMENT_OPTIONS[product.Attributes["deploymentOption"]] {
+				continue
+			}
+
 			location := product.Attributes["location"]
 			if location != "" {
 				if regionDescription != "" && regionDescription != location {
@@ -411,15 +512,11 @@ func processRDSData(
 				regionDescription = location
 			}
 
-			if product.Attributes["deploymentOption"] != "Single-AZ" {
-				continue
-			}
-
 			instance, ok := instancesHashmap[instanceType]
 			if !ok {
 				instance = map[string]any{
 					"instance_type":           instanceType,
-					"pricing":                 make(map[string]map[string]any),
+					"pricing":                 make(map[string]map[string]*rdsPricing),
 					"ebs_baseline_throughput": 0.0,
 					"ebs_baseline_iops":       0,
 					"ebs_baseline_bandwidth":  0,
@@ -458,15 +555,14 @@ func processRDSData(
 					// Intentionally empty - this just gets the first one
 				}
 
-				// Handle getting the on demand pricing
-				getPricingdataScoped := func(platform string) *genericAwsPricingData {
-					return getgenericAwsPricingData(instance, rawRegion.RegionName, platform)
-				}
+				getPricingBucket := rdsPricingBucketByEngineKey(
+					instance, rawRegion.RegionName, attributes["deploymentOption"],
+				)
 				processRdsOnDemandDimension(
 					attributes,
 					instance["instance_type"].(string),
 					priceDimension,
-					getPricingdataScoped,
+					getPricingBucket,
 					currency,
 					unbundledSqlServerInstanceTypes,
 					licenseRatesByRegion[rawRegion.RegionName],
@@ -485,11 +581,10 @@ func processRDSData(
 				instance := skuData.instance
 				attributes := skuData.attributes
 
-				// Process the reserved pricing
-				getPricingdataScoped := func(platform string) *genericAwsPricingData {
-					return getgenericAwsPricingData(instance, rawRegion.RegionName, platform)
-				}
-				processRdsReservedOffer(attributes, offer, getPricingdataScoped, currency)
+				getPricingBucket := rdsPricingBucketByEngineKey(
+					instance, rawRegion.RegionName, attributes["deploymentOption"],
+				)
+				processRdsReservedOffer(attributes, offer, getPricingBucket, currency)
 			}
 		}
 
@@ -508,16 +603,16 @@ func processRDSData(
 			if !ok {
 				continue
 			}
+			getPricingBucket := rdsPricingBucketByEngineKey(
+				skuInfo.instance, region, skuInfo.attributes["deploymentOption"],
+			)
+			pricingBuckets := rdsEnginePricingBuckets(getPricingBucket, skuInfo.attributes)
+			if pricingBuckets == nil {
+				continue
+			}
 			for term, price := range termMap {
-				data := []*genericAwsPricingData{
-					getgenericAwsPricingData(skuInfo.instance, region, skuInfo.attributes["databaseEngine"]),
-					getgenericAwsPricingData(skuInfo.instance, region, skuInfo.attributes["engineCode"]),
-				}
-				for _, pricingData := range data {
-					if pricingData.Reserved == nil {
-						pricingData.Reserved = map[string]float64{}
-					}
-					pricingData.Reserved[term] = price
+				for _, pricingBucket := range pricingBuckets {
+					pricingBucket.Reserved[term] = price
 				}
 			}
 		}
@@ -525,7 +620,7 @@ func processRDSData(
 
 	// Clean up empty regions and set the regions map for non-empty regions
 	for _, instance := range instancesHashmap {
-		instance["regions"] = cleanEmptyRegions(instance["pricing"].(map[string]map[string]any), regionDescriptions)
+		instance["regions"] = cleanEmptyRdsRegions(instance["pricing"].(map[string]map[string]*rdsPricing), regionDescriptions)
 	}
 
 	// Attach the supported database engine version ranges (issue #710). Sourced

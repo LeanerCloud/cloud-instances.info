@@ -100,6 +100,7 @@ export default function EC2InstanceRoot({
                             useSpotMin={false}
                             setPathSuffix={setPathSuffix}
                             onPlatformChange={setSelectedPlatform}
+                            supportRdsMultiAz={generatorKey === "rds"}
                         />
                         <VantageDemo link="https://www.vantage.sh/lp/aws-instances-demo?utm_campaign=Instances%20Blog%20Clicks&utm_source=details-sidebar" />
                         <FamilySize

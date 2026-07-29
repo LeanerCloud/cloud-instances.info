@@ -15,6 +15,7 @@ import {
     useSearchTerm,
     useSelectedRegion,
     useReservedTerm,
+    useRdsDeploymentOption,
     useActiveTableDataFormatter,
     usePricingUnit,
     useDuration,
@@ -91,6 +92,7 @@ export default function InstanceTable<
     const [pricingUnit] = usePricingUnit(pathname, ecuRename);
     const [costDuration] = useDuration(pathname);
     const [reservedTerm] = useReservedTerm(pathname);
+    const [rdsDeploymentOption] = useRdsDeploymentOption(pathname);
     const [columnFilters, setColumnFilters] = useColumnFilters(pathname);
     const [compareOn] = useCompareOn(pathname);
     const [selected, setSelected] = useSelected(pathname);
@@ -98,17 +100,29 @@ export default function InstanceTable<
     const [currency] = useCurrency(pathname);
     const conversionRate = currencyRateAtom.use();
 
-    const columns = columnData[columnAtomKey].columnsGen(
-        selectedRegion,
-        pricingUnit,
-        costDuration,
-        reservedTerm,
-        {
-            code: currency,
-            usdRate: conversionRate.usd,
-            cnyRate: conversionRate.cny,
-        },
-    );
+    const currencyObj = {
+        code: currency,
+        usdRate: conversionRate.usd,
+        cnyRate: conversionRate.cny,
+    };
+
+    const columns =
+        columnAtomKey === "rds"
+            ? columnData.rds.columnsGen(
+                  selectedRegion,
+                  pricingUnit,
+                  costDuration,
+                  reservedTerm,
+                  currencyObj,
+                  rdsDeploymentOption,
+              )
+            : columnData[columnAtomKey].columnsGen(
+                  selectedRegion,
+                  pricingUnit,
+                  costDuration,
+                  reservedTerm,
+                  currencyObj,
+              );
     for (const col of columns) {
         col.sortUndefined = "last";
     }

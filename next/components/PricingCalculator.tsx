@@ -1,14 +1,15 @@
 "use client";
 
-import { CostDuration, Region } from "@/types";
+import { CostDuration, Region, RdsDeploymentOption } from "@/types";
 import { DollarSignIcon } from "lucide-react";
 import { useMemo, useState, useId, useEffect, useCallback } from "react";
 import processRainbowTable from "@/utils/processRainbowTable";
 import { durationOptions } from "@/utils/dataMappings";
 import type { CurrencyItem } from "@/utils/loadCurrencies";
-import { currencyRateAtom } from "@/state";
+import { currencyRateAtom, useRdsDeploymentOption } from "@/state";
 import CurrencySelector from "./CurrencySelector";
 import { browserBlockingLocalStorage } from "@/utils/abGroup";
+import { rdsEngineBucket, type RdsEnginePricing } from "@/utils/rdsPricing";
 
 interface Platform {
     ondemand: string | number;
@@ -77,6 +78,7 @@ function Calculator({
     setPathSuffix,
     currencies,
     onPlatformChange,
+    supportRdsMultiAz = false,
 }: {
     pricing: Record<string, Record<string, Platform>>;
     regions: Region;
@@ -90,8 +92,11 @@ function Calculator({
     setPathSuffix: (value: string) => void;
     currencies: CurrencyItem[];
     onPlatformChange?: (platform: string) => void;
+    supportRdsMultiAz?: boolean;
 }) {
     const priceHoldersId = useId();
+    const [rdsDeploymentOption, setRdsDeploymentOption] =
+        useRdsDeploymentOption("/rds");
 
     const defaultRegion = useMemo(() => {
         if (!pricing[defaultRegionForType]) return Object.keys(pricing)[0];
@@ -260,7 +265,13 @@ function Calculator({
     );
 
     const prices = useMemo(() => {
-        const root = pricing[region]?.[platform];
+        const root = supportRdsMultiAz
+            ? rdsEngineBucket(
+                  pricing[region] as Record<string, RdsEnginePricing>,
+                  platform,
+                  rdsDeploymentOption,
+              )
+            : pricing[region]?.[platform];
         const a = [
             {
                 label: "On Demand",
@@ -320,6 +331,8 @@ function Calculator({
         currency,
         conversionRate,
         reservedTermOptions,
+        supportRdsMultiAz,
+        rdsDeploymentOption,
     ]);
 
     const handleRegions = (
@@ -448,6 +461,23 @@ function Calculator({
                     </select>
                 )}
 
+                {supportRdsMultiAz && (
+                    <select
+                        aria-label="Deployment"
+                        aria-controls={priceHoldersId}
+                        value={rdsDeploymentOption}
+                        className={selectStyling}
+                        onChange={(e) =>
+                            setRdsDeploymentOption(
+                                e.target.value as RdsDeploymentOption,
+                            )
+                        }
+                    >
+                        <option value="single-az">Single-AZ</option>
+                        <option value="multi-az">Multi-AZ</option>
+                    </select>
+                )}
+
                 <select
                     aria-label="Duration"
                     aria-controls={priceHoldersId}
@@ -523,6 +553,7 @@ type PricingCalculatorProps = {
     setPathSuffix: (value: string) => void;
     currencies: CurrencyItem[];
     onPlatformChange?: (platform: string) => void;
+    supportRdsMultiAz?: boolean;
 };
 
 export default function PricingCalculator({
@@ -539,6 +570,7 @@ export default function PricingCalculator({
     setPathSuffix,
     currencies,
     onPlatformChange,
+    supportRdsMultiAz = false,
 }: PricingCalculatorProps) {
     const instance = useMemo(() => {
         if (!Array.isArray(compressedInstance.pricing))
@@ -565,6 +597,7 @@ export default function PricingCalculator({
                 setPathSuffix={setPathSuffix}
                 currencies={currencies}
                 onPlatformChange={onPlatformChange}
+                supportRdsMultiAz={supportRdsMultiAz}
             />
         </section>
     );

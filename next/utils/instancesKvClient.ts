@@ -19,6 +19,7 @@ type DumpV1 = {
     costDuration: string;
     region: string;
     reservedTerm: string;
+    rdsDeploymentOption: string;
     compareOn: boolean;
     selected: string[];
     visibleColumns: Record<string, boolean>;

@@ -6,6 +6,22 @@ import (
 	"strings"
 )
 
+func getgenericAwsPricingData(instance map[string]any, regionName, platform string) *genericAwsPricingData {
+	regionToEngineToPricingMap := instance["pricing"].(map[string]map[string]any)[regionName]
+	if regionToEngineToPricingMap == nil {
+		regionToEngineToPricingMap = make(map[string]any)
+		instance["pricing"].(map[string]map[string]any)[regionName] = regionToEngineToPricingMap
+	}
+	enginePricing := regionToEngineToPricingMap[platform]
+	if enginePricing == nil {
+		enginePricing = &genericAwsPricingData{
+			Reserved: make(map[string]float64),
+		}
+		regionToEngineToPricingMap[platform] = enginePricing
+	}
+	return enginePricing.(*genericAwsPricingData)
+}
+
 func cleanEmptyRegions(pricing map[string]map[string]any, regionDescriptions map[string]string) map[string]string {
 	for region, regionData := range pricing {
 		okOsCount := 0

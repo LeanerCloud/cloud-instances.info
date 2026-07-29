@@ -1,6 +1,11 @@
 "use client";
 
-import { CostDuration, PricingUnit, Region } from "@/types";
+import {
+    CostDuration,
+    PricingUnit,
+    Region,
+    RdsDeploymentOption,
+} from "@/types";
 import FilterDropdown from "./FilterDropdown";
 import ColumnFilter from "./ColumnFilter";
 import ExportDropdown from "./ExportDropdown";
@@ -10,6 +15,7 @@ import {
     usePricingUnit,
     useDuration,
     useReservedTerm,
+    useRdsDeploymentOption,
     useCompareOn,
     useColumnVisibility,
     useSelected,
@@ -53,6 +59,8 @@ export default function Filters<DataKey extends keyof typeof columnData>({
     const [pricingUnit, setPricingUnit] = usePricingUnit(pathname, ecuRename);
     const [duration, setDuration] = useDuration(pathname);
     const [reservedTerm, setReservedTerm] = useReservedTerm(pathname);
+    const [rdsDeploymentOption, setRdsDeploymentOption] =
+        useRdsDeploymentOption(pathname);
     const [compareOn, setCompareOn] = useCompareOn(pathname);
     const [selected] = useSelected(pathname);
     const [currency, setCurrency] = useCurrency(pathname, currencies);
@@ -221,6 +229,21 @@ export default function Filters<DataKey extends keyof typeof columnData>({
                         hideSearch={true}
                         small={true}
                     />
+                    {pathname === "/rds" && (
+                        <FilterDropdown
+                            label="Deployment"
+                            value={rdsDeploymentOption}
+                            onChange={(v) =>
+                                setRdsDeploymentOption(v as RdsDeploymentOption)
+                            }
+                            options={[
+                                { value: "single-az", label: "Single-AZ" },
+                                { value: "multi-az", label: "Multi-AZ" },
+                            ]}
+                            hideSearch={true}
+                            small={true}
+                        />
+                    )}
                     {reservedTermOptions.length > 0 && (
                         <FilterDropdown
                             label={reservedLabel ?? "Reserved"}
