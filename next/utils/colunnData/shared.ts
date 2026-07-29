@@ -131,13 +131,13 @@ export function calculateCost(
     );
     if (perTime === undefined) return "N/A";
 
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
+
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
-        minimumFractionDigits: resolvePricePrecision(
-            pricePrecision,
-            costDuration,
-        ),
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision,
     }).format(perTime);
 
     return `${currencyData} ${costDuration}`;

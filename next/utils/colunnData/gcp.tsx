@@ -181,6 +181,7 @@ export function calculateAndFormatCost(
         style: "currency",
         currency: currency.code,
         minimumFractionDigits: precision,
+        maximumFractionDigits: precision,
     }).format(perTime);
 
     return `${currencyData}${pricingMeasuringUnits}`;
