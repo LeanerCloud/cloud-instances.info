@@ -6,6 +6,7 @@ import makeRainbowTable from "@/utils/makeRainbowTable";
 import type { Metadata } from "next";
 import loadAdvertData from "@/utils/loadAdvertData";
 import loadCurrencies from "@/utils/loadCurrencies";
+import { databaseSavingsPlanSupported } from "@/utils/dataMappings";
 
 export const metadata: Metadata = {
     title: "Amazon ElastiCache Instance Comparison",
@@ -77,6 +78,7 @@ export default async function Cache() {
             instanceCount={instances.length}
             columnAtomKey="cache"
             marketingData={marketingData}
+            savingsPlanSupported={[...databaseSavingsPlanSupported]}
         />
     );
 }

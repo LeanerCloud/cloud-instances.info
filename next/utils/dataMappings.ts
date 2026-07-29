@@ -27,6 +27,7 @@ type ReservedTermOption = {
 const RESERVED = "Reserved";
 const INSTANCE_SAVINGS_GROUP = "Instance Savings Plan";
 const COMPUTE_SAVINGS_PLAN = "Compute Savings Plan";
+const DATABASE_SAVINGS_PLAN = "Database Savings Plan";
 
 const sharedReservedTermOptions: ReservedTermOption[] = [
     {
@@ -112,16 +113,27 @@ const savingsPlanExtras = {
         "3-year Instance Savings Plan - Partial Upfront",
     "yrTerm3InstanceSavings.allUpfront":
         "3-year Instance Savings Plan - Full Upfront",
+    "yrTerm1DatabaseSavings.noUpfront":
+        "1-year Database Savings Plan - No Upfront",
 };
 
 const savingsPlanCache = new Map<string, ReservedTermOption[]>();
 
 export type SupportedSavingsPlanOptions = keyof typeof savingsPlanExtras;
 
+/** Database Savings Plan terms exposed on RDS and ElastiCache listing pages. */
+export const databaseSavingsPlanSupported = [
+    "yrTerm1DatabaseSavings.noUpfront",
+] as const satisfies readonly SupportedSavingsPlanOptions[];
+
 /** Label for reserved-cost columns: RI vs Savings Plan, based on the selected term key. */
 export function commitmentTypeLabel(
     term: string,
-): "Reserved" | "Instance Savings Plan" | "Compute Savings Plan" {
+):
+    | "Reserved"
+    | "Instance Savings Plan"
+    | "Compute Savings Plan"
+    | "Database Savings Plan" {
     if (!term.includes("Savings")) {
         return "Reserved";
     }
@@ -130,7 +142,21 @@ export function commitmentTypeLabel(
         return "Instance Savings Plan";
     }
 
+    if (term.includes("Database")) {
+        return "Database Savings Plan";
+    }
+
     return "Compute Savings Plan";
+}
+
+function savingsPlanGroup(term: string): string {
+    if (term.includes("InstanceSavings")) {
+        return INSTANCE_SAVINGS_GROUP;
+    }
+    if (term.includes("DatabaseSavings")) {
+        return DATABASE_SAVINGS_PLAN;
+    }
+    return COMPUTE_SAVINGS_PLAN;
 }
 
 export const reservedTermOptions = (
@@ -142,6 +168,7 @@ export const reservedTermOptions = (
     if (cached) return cached;
 
     const instanceSavingsPlanGroup: ReservedTermOption[] = [];
+    const databaseSavingsPlanGroup: ReservedTermOption[] = [];
     const computeSavingsPlanGroup: ReservedTermOption[] = [];
     for (const savingsPlan of savingsPlanSupported) {
         const label = savingsPlanExtras[savingsPlan];
@@ -149,20 +176,20 @@ export const reservedTermOptions = (
         const option = {
             value: savingsPlan,
             label,
-            group: savingsPlan.includes("InstanceSavings")
-                ? INSTANCE_SAVINGS_GROUP
-                : COMPUTE_SAVINGS_PLAN,
+            group: savingsPlanGroup(savingsPlan),
         };
         if (option.group === INSTANCE_SAVINGS_GROUP) {
             instanceSavingsPlanGroup.push(option);
+        } else if (option.group === DATABASE_SAVINGS_PLAN) {
+            databaseSavingsPlanGroup.push(option);
         } else {
             computeSavingsPlanGroup.push(option);
         }
-        // Put all the possible savingPlans into groups for the dropdown
     }
     const options = [
         ...sharedReservedTermOptions,
         ...instanceSavingsPlanGroup,
+        ...databaseSavingsPlanGroup,
         ...computeSavingsPlanGroup,
     ];
     savingsPlanCache.set(key, options);

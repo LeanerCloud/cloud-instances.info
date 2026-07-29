@@ -6,6 +6,7 @@ import Head from "next/head";
 import type { Metadata } from "next";
 import loadAdvertData from "@/utils/loadAdvertData";
 import loadCurrencies from "@/utils/loadCurrencies";
+import { databaseSavingsPlanSupported } from "@/utils/dataMappings";
 
 export const metadata: Metadata = {
     title: "Amazon RDS Instance Comparison",
@@ -49,6 +50,7 @@ export default async function RDS() {
                 compressedDataPathTemplate={`/remaining-rds-instances.msgpack.xz?cache=${instancesHash}`}
                 columnAtomKey="rds"
                 marketingData={marketingData}
+                savingsPlanSupported={[...databaseSavingsPlanSupported]}
             />
         </>
     );
