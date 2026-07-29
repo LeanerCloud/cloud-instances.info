@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"encoding/json"
 	"testing"
 
 	"scraper/aws/awsutils"
@@ -15,12 +16,12 @@ func assembleOnDemand(
 	unbundled map[string]bool,
 	licenseRates map[engineCode]float64,
 ) float64 {
-	instance := map[string]any{
-		"pricing": make(map[string]map[string]any),
+	instance := newRdsPricingInstance()
+	deploymentOption := attributes["deploymentOption"]
+	if deploymentOption == "" {
+		deploymentOption = "Single-AZ"
 	}
-	getPricing := func(platform string) *genericAwsPricingData {
-		return getgenericAwsPricingData(instance, "us-east-1", platform)
-	}
+	getPricingBucket := rdsPricingBucketByEngineKey(instance, "us-east-1", deploymentOption)
 	pd := awsutils.RegionPriceDimension{
 		Description:  "instance hour running SQL Server",
 		PricePerUnit: map[string]string{"USD": basePrice},
@@ -29,12 +30,16 @@ func assembleOnDemand(
 		attributes,
 		attributes["instanceType"],
 		pd,
-		getPricing,
+		getPricingBucket,
 		"USD",
 		unbundled,
 		licenseRates,
 	)
-	return getPricing(attributes["engineCode"]).OnDemand
+	engineBucket := getPricingBucket(attributes["engineCode"])
+	if engineBucket == nil {
+		return 0
+	}
+	return engineBucket.OnDemand
 }
 
 // approxEqual is defined once for package aws in reserved_pricing_test.go.
@@ -262,5 +267,117 @@ func TestAddRdsVcpuByEngine(t *testing.T) {
 		if got := vcpuByEngine[engine]; got != want {
 			t.Errorf("vcpu_by_engine[%q] = %q, want %q", engine, got, want)
 		}
+	}
+}
+
+func TestRdsPricingJSON(t *testing.T) {
+	p := &rdsPricing{
+		genericAwsPricingData: genericAwsPricingData{
+			OnDemand: 0.178,
+			Reserved: map[string]float64{"yrTerm1Standard.noUpfront": 0.12},
+		},
+		MultiAZ: &genericAwsPricingData{
+			OnDemand: 0.356,
+			Reserved: map[string]float64{"yrTerm1Standard.noUpfront": 0.24},
+		},
+	}
+
+	got := map[string]any{}
+	b, err := json.Marshal(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(b, &got); err != nil {
+		t.Fatal(err)
+	}
+
+	if got["ondemand"] != 0.178 {
+		t.Errorf("ondemand = %v, want 0.178", got["ondemand"])
+	}
+	reserved, ok := got["reserved"].(map[string]any)
+	if !ok || reserved["yrTerm1Standard.noUpfront"] != 0.12 {
+		t.Errorf("reserved = %v, want yrTerm1Standard.noUpfront=0.12", got["reserved"])
+	}
+	multiAZ, ok := got["multi_az"].(map[string]any)
+	if !ok {
+		t.Fatalf("multi_az = %T, want object", got["multi_az"])
+	}
+	if multiAZ["ondemand"] != 0.356 {
+		t.Errorf("multi_az.ondemand = %v, want 0.356", multiAZ["ondemand"])
+	}
+}
+
+func newRdsPricingInstance() map[string]any {
+	return map[string]any{
+		"pricing": make(map[string]map[string]*rdsPricing),
+	}
+}
+
+func TestGetRdsPricingData(t *testing.T) {
+	instance := newRdsPricingInstance()
+
+	first := getOrCreateRdsEnginePricing(instance, "us-east-1", "14")
+	if first == nil {
+		t.Fatal("getRdsPricingData returned nil")
+	}
+	if first.Reserved == nil {
+		t.Fatal("Reserved map should be initialized")
+	}
+
+	second := getOrCreateRdsEnginePricing(instance, "us-east-1", "14")
+	if second != first {
+		t.Fatal("getRdsPricingData should return the same *rdsPricing for the same keys")
+	}
+
+	otherEngine := getOrCreateRdsEnginePricing(instance, "us-east-1", "PostgreSQL")
+	if otherEngine == first {
+		t.Fatal("different platform keys should get distinct *rdsPricing values")
+	}
+
+	otherRegion := getOrCreateRdsEnginePricing(instance, "eu-west-1", "14")
+	if otherRegion == first {
+		t.Fatal("different region keys should get distinct *rdsPricing values")
+	}
+
+	pricingByRegion := instance["pricing"].(map[string]map[string]*rdsPricing)
+	if len(pricingByRegion["us-east-1"]) != 2 {
+		t.Errorf("us-east-1 engine count = %d, want 2", len(pricingByRegion["us-east-1"]))
+	}
+	if pricingByRegion["eu-west-1"]["14"] != otherRegion {
+		t.Error("nested map should store the eu-west-1 engine pricing pointer")
+	}
+}
+
+func TestGetRdsDeploymentPricingData(t *testing.T) {
+	instance := newRdsPricingInstance()
+
+	single := getRdsDeploymentPricingBucket(instance, "us-east-1", "14", "Single-AZ")
+	if single == nil {
+		t.Fatal("Single-AZ should be supported")
+	}
+	single.OnDemand = 0.178
+
+	multi := getRdsDeploymentPricingBucket(instance, "us-east-1", "14", "Multi-AZ")
+	if multi == nil {
+		t.Fatal("Multi-AZ should be supported")
+	}
+	if multi == single {
+		t.Fatal("Multi-AZ bucket must be distinct from Single-AZ bucket")
+	}
+	if multi.Reserved == nil {
+		t.Fatal("Multi-AZ bucket should initialize Reserved map")
+	}
+	multi.OnDemand = 0.356
+
+	if getRdsDeploymentPricingBucket(instance, "us-east-1", "14", "Multi-AZ (readable standbys)") != nil {
+		t.Fatal("readable standbys should not be supported yet")
+	}
+
+	engine := getOrCreateRdsEnginePricing(instance, "us-east-1", "14")
+	if engine.OnDemand != 0.178 {
+		t.Errorf("Single-AZ OnDemand = %v, want 0.178", engine.OnDemand)
+	}
+	if engine.MultiAZ == nil || engine.MultiAZ.OnDemand != 0.356 {
+		t.Errorf("Multi-AZ OnDemand = %v, want 0.356", engine.MultiAZ)
 	}
 }
