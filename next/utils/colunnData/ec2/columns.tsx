@@ -1,10 +1,21 @@
-import { CostDuration, EC2Instance, Pricing, PricingUnit } from "@/types";
+import {
+    CostDuration,
+    EC2Instance,
+    PricePrecision,
+    Pricing,
+    PricingUnit,
+} from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
 import { ClockFadingIcon } from "lucide-react";
 import sortByInstanceType from "@/utils/sortByInstanceType";
 import { commitmentTypeLabel } from "@/utils/dataMappings";
-import { regex, makeCellWithRegexSorter, expr } from "../shared";
+import {
+    regex,
+    makeCellWithRegexSorter,
+    expr,
+    resolvePricePrecision,
+} from "../shared";
 import exprCompiler from "@/utils/expr";
 
 interface Storage {
@@ -85,6 +96,7 @@ export function calculateAndFormatCost(
         usdRate: number;
         cnyRate: number;
     },
+    pricePrecision: PricePrecision = "auto",
 ): string | undefined {
     const perTime = calculateCost(
         price,
@@ -96,8 +108,7 @@ export function calculateAndFormatCost(
     );
     if (perTime === -1) return undefined;
 
-    const precision =
-        costDuration === "secondly" || costDuration === "minutely" ? 6 : 4;
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
 
     const measuringUnits = {
         instances: "",
@@ -119,6 +130,7 @@ export function calculateAndFormatCost(
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
+        minimumFractionDigits: precision,
         maximumFractionDigits: precision,
     }).format(perTime);
 
@@ -129,6 +141,7 @@ export function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     getter: (pricing: Pricing[string] | undefined) => string | undefined,
     convertToPrice: boolean,
     currency: {
@@ -192,6 +205,7 @@ export function getPricingSorter(
                 costDuration,
                 selectedRegion,
                 currency,
+                pricePrecision,
             );
         }),
     } satisfies Partial<ColumnDef<EC2Instance>>;
@@ -217,6 +231,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     reservedTerm: string,
     currency: {
         code: string;
@@ -1414,6 +1429,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => {
                 return pricing?.linux?.ondemand;
             },
@@ -1430,6 +1446,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => {
                 return pricing?.linux?.reserved?.[reservedTerm];
             },
@@ -1446,6 +1463,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.spot_min,
             true,
             currency,
@@ -1460,6 +1478,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.spot_avg,
             true,
             currency,
@@ -1474,6 +1493,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.ondemand,
             true,
             currency,
@@ -1487,6 +1507,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1500,6 +1521,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.spot_min,
             true,
             currency,
@@ -1513,6 +1535,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.spot_max,
             true,
             currency,
@@ -1526,6 +1549,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.ondemand,
             true,
             currency,
@@ -1539,6 +1563,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1552,6 +1577,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.spot_min,
             true,
             currency,
@@ -1565,6 +1591,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.spot_max,
             true,
             currency,
@@ -1578,6 +1605,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.ondemand,
             true,
             currency,
@@ -1591,6 +1619,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1604,6 +1633,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.spot_min,
             true,
             currency,
@@ -1617,6 +1647,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.spot_max,
             true,
             currency,
@@ -1630,6 +1661,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.ondemand,
             true,
             currency,
@@ -1643,6 +1675,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1656,6 +1689,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.spot_min,
             true,
             currency,
@@ -1669,6 +1703,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.spot_avg,
             true,
             currency,
@@ -1682,6 +1717,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.dedicated?.ondemand,
             true,
             currency,
@@ -1695,6 +1731,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.dedicated?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1708,6 +1745,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLWeb?.ondemand,
             true,
             currency,
@@ -1721,6 +1759,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLWeb?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1734,6 +1773,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQL?.ondemand,
             true,
             currency,
@@ -1747,6 +1787,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQL?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1760,6 +1801,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLEnterprise?.ondemand,
             true,
             currency,
@@ -1773,6 +1815,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLEnterprise?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1786,6 +1829,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLWeb?.ondemand,
             true,
             currency,
@@ -1799,6 +1843,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLWeb?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1812,6 +1857,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQL?.ondemand,
             true,
             currency,
@@ -1825,6 +1871,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQL?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1838,6 +1885,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLEnterprise?.ondemand,
             true,
             currency,
@@ -1851,6 +1899,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLEnterprise?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1864,6 +1913,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.pct_interrupt,
             false,
             currency,
@@ -1878,6 +1928,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.emr?.emr,
             true,
             currency,
@@ -1892,6 +1943,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.eks_auto_mode?.eks_auto_mode,
             true,
             currency,

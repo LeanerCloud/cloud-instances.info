@@ -145,4 +145,5 @@ export type CostDuration =
     | "monthly"
     | "annually";
 
+export type PricePrecision = "auto" | "1" | "2" | "3" | "4" | "5" | "6";
 export type RdsDeploymentOption = "single-az" | "multi-az";

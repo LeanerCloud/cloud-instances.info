@@ -1,4 +1,4 @@
-import { CostDuration, PricingUnit } from "@/types";
+import { CostDuration, PricePrecision, PricingUnit } from "@/types";
 
 export const pricingUnitOptions: { value: PricingUnit; label: string }[] = [
     { value: "instance", label: "Instance" },
@@ -6,6 +6,16 @@ export const pricingUnitOptions: { value: PricingUnit; label: string }[] = [
     { value: "ecu", label: "ECU" },
     { value: "memory", label: "Memory" },
     { value: "gpu_memory", label: "GPU Memory" },
+] as const;
+
+export const precisionOptions: { value: PricePrecision; label: string }[] = [
+    { value: "auto", label: "Auto" },
+    { value: "1", label: "1 decimal" },
+    { value: "2", label: "2 decimals" },
+    { value: "3", label: "3 decimals" },
+    { value: "4", label: "4 decimals" },
+    { value: "5", label: "5 decimals" },
+    { value: "6", label: "6 decimals" },
 ] as const;
 
 export const durationOptions: { value: CostDuration; label: string }[] = [

@@ -104,6 +104,7 @@ const blankStateDump: StateDump = {
     region: "",
     pricingUnit: "instance",
     costDuration: "hourly",
+    pricePrecision: "auto",
     // Left empty so the per-page default from useReservedTerm() applies (AWS ->
     // yrTerm1Standard.noUpfront, Azure -> yrTerm1Standard.allUpfront). Hardcoding
     // noUpfront here overrode the Azure default, leaving Azure's reserved/savings

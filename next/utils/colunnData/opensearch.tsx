@@ -1,4 +1,4 @@
-import { CostDuration, PricingUnit } from "@/types";
+import { CostDuration, PricePrecision, PricingUnit } from "@/types";
 import {
     calculateCost,
     calculateCostNumeric,
@@ -82,6 +82,7 @@ function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     getter: (
         pricing: OpenSearchPricing[string] | undefined,
     ) => string | undefined,
@@ -117,6 +118,7 @@ function getPricingSorter(
                 costDuration,
                 selectedRegion,
                 currency,
+                pricePrecision,
             );
         }),
     } satisfies Partial<ColumnDef<Instance>>;
@@ -126,6 +128,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     reservedTerm: string,
     currency: {
         code: string;
@@ -210,6 +213,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.ondemand,
             currency,
         ),
@@ -222,6 +226,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.reserved?.[reservedTerm],
             currency,
         ),
