@@ -19,6 +19,7 @@ import {
     useActiveTableDataFormatter,
     usePricingUnit,
     useDuration,
+    usePricePrecision,
     useCompareOn,
     useColumnVisibility,
     useSorting,
@@ -91,6 +92,7 @@ export default function InstanceTable<
     const [selectedRegion] = useSelectedRegion(pathname);
     const [pricingUnit] = usePricingUnit(pathname, ecuRename);
     const [costDuration] = useDuration(pathname);
+    const [pricePrecision] = usePricePrecision(pathname);
     const [reservedTerm] = useReservedTerm(pathname);
     const [rdsDeploymentOption] = useRdsDeploymentOption(pathname);
     const [columnFilters, setColumnFilters] = useColumnFilters(pathname);
@@ -112,6 +114,7 @@ export default function InstanceTable<
                   selectedRegion,
                   pricingUnit,
                   costDuration,
+                  pricePrecision,
                   reservedTerm,
                   currencyObj,
                   rdsDeploymentOption,
@@ -120,6 +123,7 @@ export default function InstanceTable<
                   selectedRegion,
                   pricingUnit,
                   costDuration,
+                  pricePrecision,
                   reservedTerm,
                   currencyObj,
               );

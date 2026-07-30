@@ -2,6 +2,7 @@
 
 import {
     CostDuration,
+    PricePrecision,
     PricingUnit,
     Region,
     RdsDeploymentOption,
@@ -14,6 +15,7 @@ import {
     useSelectedRegion,
     usePricingUnit,
     useDuration,
+    usePricePrecision,
     useReservedTerm,
     useRdsDeploymentOption,
     useCompareOn,
@@ -21,7 +23,11 @@ import {
     useSelected,
     useCurrency,
 } from "@/state";
-import { pricingUnitOptions, durationOptions } from "@/utils/dataMappings";
+import {
+    pricingUnitOptions,
+    durationOptions,
+    precisionOptions,
+} from "@/utils/dataMappings";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as columnData from "@/utils/colunnData";
 import { usePathname } from "next/navigation";
@@ -35,6 +41,7 @@ interface FiltersProps<DataKey extends keyof typeof columnData> {
     reservedTermOptions: {
         value: string;
         label: string;
+        group?: string;
     }[];
     currencies: CurrencyItem[];
     ecuRename?: string;
@@ -58,6 +65,7 @@ export default function Filters<DataKey extends keyof typeof columnData>({
     const [selectedRegion, setSelectedRegion] = useSelectedRegion(pathname);
     const [pricingUnit, setPricingUnit] = usePricingUnit(pathname, ecuRename);
     const [duration, setDuration] = useDuration(pathname);
+    const [pricePrecision, setPricePrecision] = usePricePrecision(pathname);
     const [reservedTerm, setReservedTerm] = useReservedTerm(pathname);
     const [rdsDeploymentOption, setRdsDeploymentOption] =
         useRdsDeploymentOption(pathname);
@@ -170,8 +178,11 @@ export default function Filters<DataKey extends keyof typeof columnData>({
                     columnData[columnAtomKey].initialColumnsValue[key],
             };
         }
-        return columnData[columnAtomKey].makePrettyNames(makeColumnOption);
-    }, [JSON.stringify(columnVisibility)]);
+        return columnData[columnAtomKey].makePrettyNames(
+            makeColumnOption,
+            reservedTerm,
+        );
+    }, [JSON.stringify(columnVisibility), reservedTerm, columnAtomKey]);
 
     let pricingUnitOptionsCpy = pricingUnitOptions;
     if (ecuRename) {
@@ -226,6 +237,14 @@ export default function Filters<DataKey extends keyof typeof columnData>({
                         value={duration}
                         onChange={(v) => setDuration(v as CostDuration)}
                         options={durationOptions}
+                        hideSearch={true}
+                        small={true}
+                    />
+                    <FilterDropdown
+                        label="Precision"
+                        value={pricePrecision}
+                        onChange={(v) => setPricePrecision(v as PricePrecision)}
+                        options={precisionOptions}
                         hideSearch={true}
                         small={true}
                     />

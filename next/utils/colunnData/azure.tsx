@@ -1,10 +1,11 @@
-import { PricingUnit } from "@/types";
+import { PricingUnit, PricePrecision } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import {
     regex,
     makeCellWithRegexSorter,
     expr,
     transformAllDataTables,
+    resolvePricePrecision,
 } from "./shared";
 import { CostDuration } from "@/types";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
@@ -93,6 +94,7 @@ export function makePrettyNames<V>(
         key: keyof typeof initialColumnsValue,
         label: string,
     ) => V,
+    _reservedTerm: string,
 ) {
     return [
         makeColumnOption("pretty_name_azure", "Name"),
@@ -164,6 +166,7 @@ export function calculateAndFormatCost(
         code: string;
         usdRate: number;
     },
+    pricePrecision: PricePrecision = "auto",
 ): string | undefined {
     const perTime = calculateCost(
         price,
@@ -174,8 +177,7 @@ export function calculateAndFormatCost(
     );
     if (perTime === -1) return undefined;
 
-    const precision =
-        costDuration === "secondly" || costDuration === "minutely" ? 6 : 4;
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
 
     const measuringUnits = {
         instances: "",
@@ -197,6 +199,7 @@ export function calculateAndFormatCost(
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
+        minimumFractionDigits: precision,
         maximumFractionDigits: precision,
     }).format(perTime);
 
@@ -207,6 +210,7 @@ function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     getter: (pricing: AzurePricing[string] | undefined) => number | undefined,
     currency: {
         code: string;
@@ -254,6 +258,7 @@ function getPricingSorter(
                 pricingUnit,
                 costDuration,
                 currency,
+                pricePrecision,
             );
         }),
     } satisfies Partial<ColumnDef<AzureInstance>>;
@@ -263,6 +268,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     reservedTerm: string,
     currency: {
         code: string;
@@ -398,6 +404,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.ondemand,
                 currency,
             ),
@@ -410,6 +417,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.reserved?.[savingsKey],
                 currency,
             ),
@@ -422,6 +430,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.reserved?.[reservedTerm],
                 currency,
             ),
@@ -434,6 +443,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.linux?.spot_min,
                 currency,
             ),
@@ -446,6 +456,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.ondemand,
                 currency,
             ),
@@ -458,6 +469,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.reserved?.[savingsKey],
                 currency,
             ),
@@ -470,6 +482,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.reserved?.[reservedTerm],
                 currency,
             ),
@@ -482,6 +495,7 @@ export const columnsGen = (
                 selectedRegion,
                 pricingUnit,
                 costDuration,
+                pricePrecision,
                 (pricing) => pricing?.windows?.spot_min,
                 currency,
             ),

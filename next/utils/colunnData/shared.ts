@@ -1,4 +1,4 @@
-import { CostDuration, PricingUnit } from "@/types";
+import { CostDuration, PricePrecision, PricingUnit } from "@/types";
 import { Row } from "@tanstack/react-table";
 import exprCompiler from "@/utils/expr";
 
@@ -64,6 +64,16 @@ const hourMultipliers = {
     annually: 365 * 24,
 };
 
+export function resolvePricePrecision(
+    pricePrecision: PricePrecision,
+    costDuration: CostDuration,
+): number {
+    if (pricePrecision !== "auto") {
+        return Number(pricePrecision);
+    }
+    return costDuration === "secondly" || costDuration === "minutely" ? 6 : 4;
+}
+
 export function calculateCostNumeric(
     price: string | undefined,
     instance: any,
@@ -107,6 +117,7 @@ export function calculateCost(
         usdRate: number;
         cnyRate: number;
     },
+    pricePrecision: PricePrecision = "auto",
 ) {
     if (!price) return "N/A";
 
@@ -120,10 +131,13 @@ export function calculateCost(
     );
     if (perTime === undefined) return "N/A";
 
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
+
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
-        maximumFractionDigits: 4,
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision,
     }).format(perTime);
 
     return `${currencyData} ${costDuration}`;

@@ -1,9 +1,21 @@
-import { CostDuration, EC2Instance, Pricing, PricingUnit } from "@/types";
+import {
+    CostDuration,
+    EC2Instance,
+    PricePrecision,
+    Pricing,
+    PricingUnit,
+} from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import RegionLinkPreloader from "@/components/RegionLinkPreloader";
 import { ClockFadingIcon } from "lucide-react";
 import sortByInstanceType from "@/utils/sortByInstanceType";
-import { regex, makeCellWithRegexSorter, expr } from "../shared";
+import { commitmentTypeLabel } from "@/utils/dataMappings";
+import {
+    regex,
+    makeCellWithRegexSorter,
+    expr,
+    resolvePricePrecision,
+} from "../shared";
 import exprCompiler from "@/utils/expr";
 
 interface Storage {
@@ -84,6 +96,7 @@ export function calculateAndFormatCost(
         usdRate: number;
         cnyRate: number;
     },
+    pricePrecision: PricePrecision = "auto",
 ): string | undefined {
     const perTime = calculateCost(
         price,
@@ -95,8 +108,7 @@ export function calculateAndFormatCost(
     );
     if (perTime === -1) return undefined;
 
-    const precision =
-        costDuration === "secondly" || costDuration === "minutely" ? 6 : 4;
+    const precision = resolvePricePrecision(pricePrecision, costDuration);
 
     const measuringUnits = {
         instances: "",
@@ -118,6 +130,7 @@ export function calculateAndFormatCost(
     const currencyData = Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency.code,
+        minimumFractionDigits: precision,
         maximumFractionDigits: precision,
     }).format(perTime);
 
@@ -128,6 +141,7 @@ export function getPricingSorter(
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     getter: (pricing: Pricing[string] | undefined) => string | undefined,
     convertToPrice: boolean,
     currency: {
@@ -191,6 +205,7 @@ export function getPricingSorter(
                 costDuration,
                 selectedRegion,
                 currency,
+                pricePrecision,
             );
         }),
     } satisfies Partial<ColumnDef<EC2Instance>>;
@@ -216,6 +231,7 @@ export const columnsGen = (
     selectedRegion: string,
     pricingUnit: PricingUnit,
     costDuration: CostDuration,
+    pricePrecision: PricePrecision,
     reservedTerm: string,
     currency: {
         code: string;
@@ -1413,6 +1429,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => {
                 return pricing?.linux?.ondemand;
             },
@@ -1422,13 +1439,14 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Linux Reserved cost",
+        header: `Linux ${commitmentTypeLabel(reservedTerm)} cost`,
         size: 180,
         id: "cost-reserved",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => {
                 return pricing?.linux?.reserved?.[reservedTerm];
             },
@@ -1445,6 +1463,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.spot_min,
             true,
             currency,
@@ -1459,6 +1478,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.spot_avg,
             true,
             currency,
@@ -1473,6 +1493,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.ondemand,
             true,
             currency,
@@ -1480,12 +1501,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "RHEL Reserved cost",
+        header: `RHEL ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-rhel",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1499,6 +1521,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.spot_min,
             true,
             currency,
@@ -1512,6 +1535,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhel?.spot_max,
             true,
             currency,
@@ -1525,6 +1549,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.ondemand,
             true,
             currency,
@@ -1532,12 +1557,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "RHEL with HA Reserved cost",
+        header: `RHEL with HA ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-rhelHA",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1551,6 +1577,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.spot_min,
             true,
             currency,
@@ -1564,6 +1591,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.rhelHA?.spot_max,
             true,
             currency,
@@ -1577,6 +1605,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.ondemand,
             true,
             currency,
@@ -1584,12 +1613,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "SLES Reserved cost",
+        header: `SLES ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-sles",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1603,6 +1633,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.spot_min,
             true,
             currency,
@@ -1616,6 +1647,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.sles?.spot_max,
             true,
             currency,
@@ -1629,6 +1661,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.ondemand,
             true,
             currency,
@@ -1636,12 +1669,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Windows Reserved cost",
+        header: `Windows ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-mswin",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1655,6 +1689,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.spot_min,
             true,
             currency,
@@ -1668,6 +1703,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswin?.spot_avg,
             true,
             currency,
@@ -1681,6 +1717,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.dedicated?.ondemand,
             true,
             currency,
@@ -1688,12 +1725,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Dedicated Host Reserved",
+        header: `Dedicated Host ${commitmentTypeLabel(reservedTerm)}`,
         id: "cost-reserved-dedicated",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.dedicated?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1707,6 +1745,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLWeb?.ondemand,
             true,
             currency,
@@ -1714,12 +1753,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Windows SQL Web Reserved cost",
+        header: `Windows SQL Web ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-mswinSQLWeb",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLWeb?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1733,6 +1773,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQL?.ondemand,
             true,
             currency,
@@ -1740,12 +1781,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Windows SQL Std Reserved cost",
+        header: `Windows SQL Std ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-mswinSQL",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQL?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1759,6 +1801,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLEnterprise?.ondemand,
             true,
             currency,
@@ -1766,12 +1809,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Windows SQL Ent Reserved cost",
+        header: `Windows SQL Ent ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-mswinSQLEnterprise",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.mswinSQLEnterprise?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1785,6 +1829,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLWeb?.ondemand,
             true,
             currency,
@@ -1792,12 +1837,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Linux SQL Web Reserved cost",
+        header: `Linux SQL Web ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-linuxSQLWeb",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLWeb?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1811,6 +1857,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQL?.ondemand,
             true,
             currency,
@@ -1818,12 +1865,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Linux SQL Std Reserved cost",
+        header: `Linux SQL Std ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-linuxSQL",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQL?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1837,6 +1885,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLEnterprise?.ondemand,
             true,
             currency,
@@ -1844,12 +1893,13 @@ export const columnsGen = (
     },
     {
         accessorKey: "pricing",
-        header: "Linux SQL Ent Reserved cost",
+        header: `Linux SQL Ent ${commitmentTypeLabel(reservedTerm)} cost`,
         id: "cost-reserved-linuxSQLEnterprise",
         ...getPricingSorter(
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linuxSQLEnterprise?.reserved?.[reservedTerm],
             true,
             currency,
@@ -1863,6 +1913,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.linux?.pct_interrupt,
             false,
             currency,
@@ -1877,6 +1928,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.emr?.emr,
             true,
             currency,
@@ -1891,6 +1943,7 @@ export const columnsGen = (
             selectedRegion,
             pricingUnit,
             costDuration,
+            pricePrecision,
             (pricing) => pricing?.eks_auto_mode?.eks_auto_mode,
             true,
             currency,

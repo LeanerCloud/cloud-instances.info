@@ -17,6 +17,7 @@ type DumpV1 = {
     }[];
     pricingUnit: string;
     costDuration: string;
+    pricePrecision: string;
     region: string;
     reservedTerm: string;
     rdsDeploymentOption: string;
