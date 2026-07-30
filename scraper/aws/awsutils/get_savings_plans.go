@@ -20,15 +20,27 @@ func loadAwsUrlJson(baseUrl string, awsUrl string, val any) error {
 	return utils.LoadJson(awsUrl, val)
 }
 
-func translateReservedTermAttributes(purchaseTerm, purchaseOption string) string {
+// savingsPlanTermSuffix maps the AWS productFamily field to the middle segment.
+func savingsPlanTermSuffix(productFamily string) string {
+	switch productFamily {
+	case "EC2InstanceSavingsPlans":
+		return "InstanceSavings"
+	case "DatabaseSavingsPlans":
+		return "DatabaseSavings"
+	default:
+		return "Savings" // Compute, SageMaker, etc.
+	}
+}
+
+func translateReservedTermAttributes(purchaseTerm, productFamily, purchaseOption string) string {
 	lease := LEASES[purchaseTerm]
 	option := PURCHASE_OPTIONS[purchaseOption]
 
-	if lease == "" || option == "" {
-		log.Fatalln("EC2 savings plan pricing data makes unknown term code", purchaseTerm, purchaseOption)
+	if lease == "" || option == "" || productFamily == "" {
+		log.Fatalln("EC2 savings plan pricing data makes unknown term code", purchaseTerm, productFamily, purchaseOption)
 	}
 
-	return lease + "Savings." + option
+	return lease + savingsPlanTermSuffix(productFamily) + "." + option
 }
 
 func processSavingsPlanRegion(
@@ -48,8 +60,10 @@ func processSavingsPlanRegion(
 		}
 
 		purchaseOption := productAttributes["purchaseOption"]
+		productFamily := productAttributes["productFamily"]
 		purchaseTerm := productAttributes["purchaseTerm"]
-		termKey := translateReservedTermAttributes(purchaseTerm, purchaseOption)
+
+		termKey := translateReservedTermAttributes(purchaseTerm, productFamily, purchaseOption)
 
 		for _, rate := range t.Rates {
 			price := Floaty(rate.DiscountedRate.Price)

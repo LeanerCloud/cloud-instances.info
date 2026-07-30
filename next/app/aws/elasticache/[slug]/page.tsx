@@ -117,7 +117,7 @@ const osOptions: [string, string][] = [
 ];
 
 const reservedTermOptions: [string, string][] = [
-    ["Savings.noUpfront", "No Upfront (Savings Plan)"],
+    ["DatabaseSavings.noUpfront", "No Upfront (Database Savings Plan)"],
     ["Standard.noUpfront", "No Upfront"],
     ["Standard.partialUpfront", "Partial Upfront"],
     ["Standard.allUpfront", "All Upfront"],
