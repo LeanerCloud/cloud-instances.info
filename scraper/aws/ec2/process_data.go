@@ -292,6 +292,9 @@ func processEC2Data(
 	// Add placement group information
 	addPlacementGroupInfo(instancesHashmap)
 
+	// Add availability zone information
+	addAvailabilityZoneInfo(instancesHashmap, regionDescriptions)
+
 	// Add dedicated host pricing
 	if china {
 		addDedicatedHostPricingCn(instancesHashmap, regionsInverted)
