@@ -25,6 +25,8 @@ resource "aws_iam_policy" "ec2_pricing" {
           "ec2:DescribeSpotPriceHistory",
           "elasticache:DescribeEngineDefaultParameters",
           "pricing:GetProducts",
+          "rds:DescribeDBEngineVersions",
+          "rds:DescribeOrderableDBInstanceOptions",
         ],
         Resource = "*"
       }
