@@ -53,9 +53,11 @@ See [docs/setting-up-azure.md](./setting-up-azure.md) for setup instructions.
 
 #### GCP
 
-| Variable      | Description          | Required |
-| ------------- | -------------------- | -------- |
-| `GCP_API_KEY` | Google Cloud API key | Yes      |
+| Variable           | Description                 | Required |
+| ------------------ | --------------------------- | -------- |
+| `GCP_PROJECT_ID`   | GCP project ID              | Yes      |
+| `GCP_CLIENT_EMAIL` | Service account email       | Yes      |
+| `GCP_PRIVATE_KEY`  | Service account private key | Yes      |
 
 **Required GCP APIs:**
 
@@ -164,10 +166,10 @@ These variables were used by Vantage but are **not needed** in the LeanerCloud f
 
 ### GCP
 
-| Resource | Purpose                          |
-| -------- | -------------------------------- |
-| API Key  | Access to Cloud Billing API      |
-| Project  | Project with Billing API enabled |
+| Resource        | Purpose                          |
+| --------------- | -------------------------------- |
+| Service account | Access to Cloud Billing API      |
+| Project         | Project with Billing API enabled |
 
 ### CloudFlare
 
@@ -197,7 +199,7 @@ When migrating from Vantage to LeanerCloud fork:
 
 - [ ] Set up AWS IAM user with required permissions
 - [ ] Create Azure service principal
-- [ ] Create GCP API key with Billing API access
+- [ ] Create GCP service account with Billing API access (see [setting-up-gcp.md](./setting-up-gcp.md))
 - [ ] Create CloudFlare R2 buckets (production, staging)
 - [ ] Create CloudFlare KV namespaces
 - [ ] Set up CloudFlare Workers
