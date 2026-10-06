@@ -53,9 +53,11 @@ See [docs/setting-up-azure.md](./setting-up-azure.md) for setup instructions.
 
 #### GCP
 
-| Variable      | Description          | Required |
-| ------------- | -------------------- | -------- |
-| `GCP_API_KEY` | Google Cloud API key | Yes      |
+| Variable           | Description                 | Required |
+| ------------------ | --------------------------- | -------- |
+| `GCP_PROJECT_ID`   | GCP project ID              | Yes      |
+| `GCP_CLIENT_EMAIL` | Service account email       | Yes      |
+| `GCP_PRIVATE_KEY`  | Service account private key | Yes      |
 
 **Required GCP APIs:**
 
