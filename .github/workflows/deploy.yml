@@ -51,9 +51,7 @@ jobs:
                   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
                   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
                   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                  # GCP API key for Compute Engine pricing (fork scraper)
-                  GCP_API_KEY: ${{ secrets.GCP_API_KEY }}
-                  # GCP service account for Compute Engine pricing (upstream scraper)
+                  # GCP service account for Compute Engine pricing
                   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
                   GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
                   GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
