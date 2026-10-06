@@ -123,7 +123,9 @@ check_cloud_credentials() {
     # GCP
     echo ""
     echo "GCP:"
-    check_env_var "GCP_API_KEY" "required" || ((errors++))
+    check_env_var "GCP_PROJECT_ID" "required" || ((errors++))
+    check_env_var "GCP_CLIENT_EMAIL" "required" || ((errors++))
+    check_env_var "GCP_PRIVATE_KEY" "required" || ((errors++))
 
     echo ""
     if [ $errors -gt 0 ]; then
@@ -136,7 +138,9 @@ check_cloud_credentials() {
         echo "  export AZURE_CLIENT_ID=..."
         echo "  export AZURE_CLIENT_SECRET=..."
         echo "  export AZURE_SUBSCRIPTION_ID=..."
-        echo "  export GCP_API_KEY=..."
+        echo "  export GCP_PROJECT_ID=..."
+        echo "  export GCP_CLIENT_EMAIL=..."
+        echo "  export GCP_PRIVATE_KEY=..."
         return 1
     fi
 
